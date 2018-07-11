@@ -3,7 +3,7 @@ from myCSV import *
 from mybtree import *
 import gzip
 import time
-def buildDictForAttr(fileName, attrIndx):
+def buildDictForAttr(filePath, attrIndx):
     """
     This funciton return a dictionary that store the row index set for all tuples
         that share the same value for attribute of index attrIndx
@@ -15,7 +15,7 @@ def buildDictForAttr(fileName, attrIndx):
                    value = a list of integers indicate the row indices
     """
     dict_attr = {}
-    with open(fileName, 'r', encoding="ISO-8859-1") as f:
+    with open(filePath, 'r', encoding="ISO-8859-1") as f:
         reader = csv.reader(f)
         row_ID = 0
         # iterate through each row
@@ -29,23 +29,25 @@ def buildDictForAttr(fileName, attrIndx):
                 dict_attr[rd[attrIndx]] = [row_ID]
         return dict_attr
 
-def buildTreeForAllAttr(fileName, file_path):
+def buildTreeForAllAttr(fileName, dataFilePath, BtreeFilePath):
     '''
     build Btrees for all attributes, with fileName (without .csv suffix) and store them in the file_path
     '''
-    att_list = (getAttrList(fileName))
+    att_list = (getAttrList(dataFilePath))
     for att in range(len(att_list)):
-        dcc = buildDictForAttr(fileName, att)
-        buildTreeForAttr(dcc, fileName.split('.')[0], att, file_path)
+        dcc = buildDictForAttr(dataFilePath, att)
+        FName = fileName.split('.')[0]#file name without csv suffix
+        buildTreeForAttr(dcc, FName, att, BtreeFilePath)
 
 
 def main():
     #a small unit test to check the functionality of index/btree creation
     fileName = 'photos_1w.csv'
+    dataFilePath = './data/' + fileName
     filepathBtree = './btree/'
 
     # build btrees for all attributes
-    buildTreeForAllAttr(fileName, filepathBtree)
+    buildTreeForAllAttr(fileName, dataFilePath, filepathBtree)
 
     #recover btree from btreeFile
     btreeFile = 'photos_1w_Attr_0_.tree'
@@ -57,4 +59,4 @@ def main():
 
 start = time.time()
 main()
-print(time.time() - start)
+print('time = ', time.time() - start)
