@@ -9,8 +9,8 @@ import gzip
 
 def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path):
     """
-    This funciton accept a dctionary dictAttr, build an OOBtree, store the value in OOBTree and then
-    dump the Btree object into a file with name defined as fileName + _Attr_ + attrIndx_.tree
+    This funciton accepts a dctionary dictAttr, build an OOBtree, store the value in OOBTree and then
+    dump the Btree object into a file with name defined as fileName + _Attr_ + attrIndx + _.tree
     Args:
         dictAttr: a dictionary that store the (attribute, row index set) pair
         fileName: csvfile name without '.csv'
@@ -30,7 +30,7 @@ def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path):
 
 def recoverFromPickle(BtreefileName, file_path):
     """
-    This funciton accept a BtreefileName stored in the file_path and return a btree object
+    This funciton accepts a BtreefileName stored in the file_path and return a btree object
     Args:
         BtreefileName: '.tree' file that store the btree file
         file_path: path to store the btree file

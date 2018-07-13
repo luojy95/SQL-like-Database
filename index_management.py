@@ -1,17 +1,17 @@
 import csv
 from myCSV import *
 from mybtree import *
-import gzip
+# import gzip
 import time
 def buildDictForAttr(filePath, attrIndx):
     """
-    This funciton return a dictionary that store the row index set for all tuples
+    This funciton returns a dictionary that store the row index set for all tuples
         that share the same value for attribute of index attrIndx
     Args:
         fileName
         attrIndx: the index of column that is considered as the key in file fileName
     Returns:
-        dict_attr: key = attribute with index attrIndx for each tuple ,
+        dict_attr: key = attribute with index attrIndx for each tuple , Note: Index 0 is the title.
                    value = a list of integers indicate the row indices
     """
     dict_attr = {}
@@ -21,6 +21,8 @@ def buildDictForAttr(filePath, attrIndx):
         # iterate through each row
         for rd in reader:
             row_ID += 1
+            if row_ID == 1:#skip title
+                continue
             if rd[attrIndx] in dict_attr:
                 #append row index w.r.t the tuple to the list
                 dict_attr[rd[attrIndx]].append(row_ID)
@@ -42,7 +44,7 @@ def buildTreeForAllAttr(fileName, dataFilePath, BtreeFilePath):
 
 def main():
     #a small unit test to check the functionality of index/btree creation
-    fileName = 'photos_1w.csv'
+    fileName = 'review-5k.csv'
     dataFilePath = './data/' + fileName
     filepathBtree = './btree/'
 
@@ -50,11 +52,11 @@ def main():
     buildTreeForAllAttr(fileName, dataFilePath, filepathBtree)
 
     #recover btree from btreeFile
-    btreeFile = 'photos_1w_Attr_0_.tree'
+    btreeFile = 'review-5k_Attr_0_.tree'
     btree = recoverFromPickle(btreeFile, filepathBtree)
 
     count = 0
-    for k, it in btree.items():
+    for k, it in btree.iteritems():
         print(k, it)
 
 start = time.time()
