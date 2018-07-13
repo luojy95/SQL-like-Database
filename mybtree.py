@@ -4,10 +4,11 @@ import os
 import sys
 from myCSV import *
 import _pickle as cPickle
-import ubjson
+# import ubjson
 import gzip
 
-def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path):
+
+def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path, return_tree):
     """
     This funciton accepts a dctionary dictAttr, build an OOBtree, store the value in OOBTree and then
     dump the Btree object into a file with name defined as fileName + _Attr_ + attrIndx + _.tree
@@ -25,6 +26,8 @@ def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path):
     os.makedirs(file_path, exist_ok=True)
     with open(file_path + fileName + '_Attr_' + str(attrIndx) + '_.tree', "wb") as f:
         cPickle.dump(t, f)
+    if return_tree:
+        return t
     # with gzip.open(file_path + fileName + '_Attr_' + str(attrIndx) + '_.tree', "wb") as f:
     #     ubjson.dump(t, f)
 

@@ -39,8 +39,18 @@ def buildTreeForAllAttr(fileName, dataFilePath, BtreeFilePath):
     for att in range(len(att_list)):
         dcc = buildDictForAttr(dataFilePath, att)
         FName = fileName.split('.')[0]#file name without csv suffix
-        buildTreeForAttr(dcc, FName, att, BtreeFilePath)
+        buildTreeForAttr(dcc, FName, att, BtreeFilePath, return_tree = False)
 
+def buildTreeForSingleAttr(fileName, dataFilePath, BtreeFilePath, AttrId, return_tree):
+    '''
+    build Btrees for one attribute, with fileName (without .csv suffix) and store it in the file_path
+    return the tree if return_tree is true
+    '''
+    AttrDict = buildDictForAttr(dataFilePath, AttrId)#build attribute dictionary
+    FName = fileName.split('.')[0]#file name without csv suffix
+    Bt = buildTreeForAttr(AttrDict, FName, AttrId, BtreeFilePath, return_tree)
+    if return_tree:
+        return Bt
 
 def main():
     #a small unit test to check the functionality of index/btree creation
@@ -50,14 +60,19 @@ def main():
 
     # build btrees for all attributes
     buildTreeForAllAttr(fileName, dataFilePath, filepathBtree)
+    btt = buildTreeForSingleAttr(fileName, dataFilePath, filepathBtree, AttrId = 1, return_tree = True)
 
+    print(btt.keys())
     #recover btree from btreeFile
     btreeFile = 'review-5k_Attr_0_.tree'
     btree = recoverFromPickle(btreeFile, filepathBtree)
 
-    count = 0
-    for k, it in btree.iteritems():
-        print(k, it)
+    # print(list(btree.keys()))
+    # print(list(btree.values('2')));
+    # for k, it in btree.iteritems():
+    #     print(k, it)
+    # btree.items();
+
 
 start = time.time()
 main()
