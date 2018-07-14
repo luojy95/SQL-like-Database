@@ -23,12 +23,17 @@ def buildDictForAttr(filePath, attrIndx):
             row_ID += 1
             if row_ID == 1:#skip title
                 continue
-            if rd[attrIndx] in dict_attr:
+            try:
+                key = float(rd[attrIndx])
+            except:
+                key = rd[attrIndx]
+
+            if key in dict_attr:
                 #append row index w.r.t the tuple to the list
-                dict_attr[rd[attrIndx]].append(row_ID)
+                dict_attr[key].append(row_ID)
             else:
                 #create a list that store the row index w.r.t the tuple
-                dict_attr[rd[attrIndx]] = [row_ID]
+                dict_attr[key] = [row_ID]
         return dict_attr
 
 def buildTreeForAllAttr(fileName, dataFilePath, BtreeFilePath):
@@ -62,7 +67,7 @@ def main():
     buildTreeForAllAttr(fileName, dataFilePath, filepathBtree)
     btt = buildTreeForSingleAttr(fileName, dataFilePath, filepathBtree, AttrId = 1, return_tree = True)
 
-    print(btt.keys())
+    print(list(btt.keys()))
     #recover btree from btreeFile
     btreeFile = 'review-5k_Attr_0_.tree'
     btree = recoverFromPickle(btreeFile, filepathBtree)
@@ -72,6 +77,8 @@ def main():
     # for k, it in btree.iteritems():
     #     print(k, it)
     # btree.items();
+
+    # print()
 
 
 start = time.time()
