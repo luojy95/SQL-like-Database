@@ -22,3 +22,21 @@ def getAttrList(file_path):
     with open(file_path, 'r', encoding="ISO-8859-1") as f:
         attrlist = next(csv.reader(f))
         return attrlist
+def getAttrID(file_path, attr):
+    """
+    This funciton returns the index of selected attribute in fileName
+    Args:
+        fileName
+        attr(string):the name of the attribute
+    Returns:
+        attrlist: list of attributes
+    """
+
+    with open(file_path, 'r', encoding="ISO-8859-1") as f:
+        attrlist = next(csv.reader(f))
+        try:
+            AttrId = attrlist.index(attr)
+        except:
+            print("Invalid attribute")
+            AttrId = -1
+        return AttrId

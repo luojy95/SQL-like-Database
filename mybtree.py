@@ -24,7 +24,7 @@ def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path, return_tree):
     t = OOBTree()
     t.update(dictAttr)
     os.makedirs(file_path, exist_ok=True)
-    with open(file_path + fileName + '_Attr_' + str(attrIndx) + '_.tree', "wb") as f:
+    with open(file_path + '/' + fileName + '_Attr_' + str(attrIndx) + '_.tree', "wb") as f:
         cPickle.dump(t, f)
     if return_tree:
         return t
