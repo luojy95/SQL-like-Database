@@ -18,7 +18,7 @@ def Main():
 	# sql_statement = "SELECT M.movie_facebook_likes, A.Film, M.Title  FROM movies.csv M JOIN oscars.csv A ON M.movie_title = A.Film JOIN business.csv B ON M.rating = B.stars AND M.sales < B.networth WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000) AND M.title LIKE 'Face'"
 	sql_statement = "SELECT M.movie_title, M.director_name, A.date, A.useful, A.cool FROM movies.csv M, review_500k.csv A"
 	#sql_statement = "SELECT * FROM movies.csv"
-	rowindice_result_from_selection = [[3,5,6,7], [2,3,4,5]]
+	rowindice_result_from_selection = [[1000,2000,3000,4000], [2000,3000,4000,10000]]
 	#sql_statement = "SELECT facebook, google, amazon FROM movie.csv"
 	#result1 = Selectparse(sql_statement)
 	#print(result1)
@@ -29,14 +29,15 @@ def Main():
 	#result3 = ProjectCsvandAlias(sql_statement)
 	#print(result3)
 
-	print("start prepare step 1")
+	# print("start prepare step 1")
+	print("start the final projection and printing")
 	opencsv_files, rowindice_lists = PrepareCsvopenfileAndIndiceMatch(sql_statement, rowindice_result_from_selection)
-	print(opencsv_files, rowindice_lists)
-	print("start prepare step 2----")
+	# print(opencsv_files, rowindice_lists)
+	# print("start prepare step 2----")
 	pro_csv_names, pro_alias_names, pro_attribute_names = ProjectCsvandAlias(sql_statement)
-	print("pro_csv_names, pro_alias_names, pro_attribute_names are:")
-	print(pro_csv_names, pro_alias_names, pro_attribute_names)
-	print("start prepare step 3---------")
+	# print("pro_csv_names, pro_alias_names, pro_attribute_names are:")
+	# print(pro_csv_names, pro_alias_names, pro_attribute_names)
+	# print("start prepare step 3---------")
 
 	# print(opencsv_files, rowindice_lists, pro_attribute_names)
 	# fin_attributes, fin_result = FindValueinMultipleCsv(opencsv_files, rowindice_lists, pro_attribute_names)
@@ -61,7 +62,7 @@ def printlist(list_name):
 		print(row)
 # parse the selection part and return the list of alias (or none) and corresponding attribute
 def Selectparse(sql):
-	print("start parse selection part")
+	# print("start parse selection part")
 	alias_list = []
 	attribute_list = []
 	print_colume = []
@@ -97,7 +98,7 @@ def Selectparse(sql):
 
 # pair the csv name and alias name in the sequence of identifier appearing, return csv_list, alias_colume
 def PairCsvandAlias(sql):
-	print("start find alias for csv")
+	# print("start find alias for csv")
 	csv_list = []
 	alias_list = []
 	alias_colume = []
@@ -133,7 +134,7 @@ def PairCsvandAlias(sql):
 
 # parse the selection part and return the list of csv name and corresponding attributes
 def ProjectCsvandAlias(sql):
-	print("get the csv_name and attribute_name for projection")
+	# print("get the csv_name and attribute_name for projection")
 	project_alias_name, project_attribute_name = Selectparse(sql)
 	pair_csv, pair_alias = PairCsvandAlias(sql)
 	project_csv_name = []
@@ -149,8 +150,8 @@ def MatchIndicewithAliasAttribute(sql, rowindice_result_from_selection):
 	p_csv_names, p_alias_names, p_attribute_names = ProjectCsvandAlias(sql)
 	f_csv_names, f_alias_names = PairCsvandAlias(sql)
 	matched_rowindice_lists = []
-	print(len(f_csv_names))
-	print(len(rowindice_result_from_selection))
+	# print(len(f_csv_names))
+	# print(len(rowindice_result_from_selection))
 	if len(f_csv_names) != len(rowindice_result_from_selection):
 		print("no selection result matched the conditions or error: the row indice list after selection is incorrect")
 	else:
@@ -185,11 +186,11 @@ def MatchFileswithAliasAttribute(sql, file_open_list):
 
 def PrepareCsvopenfileAndIndiceMatch(sql, rowindice_result_from_selection):
 	opencsv_file = CsvReaderWithSql(sql)
-	print(opencsv_file)
+	# print(opencsv_file)
 	matched_opencsv_file = MatchFileswithAliasAttribute(sql, opencsv_file)
-	print(matched_opencsv_file)
+	# print(matched_opencsv_file)
 	matched_rowindice_lists = MatchIndicewithAliasAttribute(sql, rowindice_result_from_selection)
-	print(matched_rowindice_lists)
+	# print(matched_rowindice_lists)
 	return matched_opencsv_file, matched_rowindice_lists
 
 
@@ -204,7 +205,7 @@ def all_same(items):
 #problem: currently the indice for each row_indice is sorted automatically
 def Findvalueincsv(filename, row_indice, volume_value_list):
 	volume_index = []
-	print(filename)
+	# print(filename)
 	f = csv.reader(filename)
 	filename.seek(0)
 	row1 = next(f)
