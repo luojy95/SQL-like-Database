@@ -3,6 +3,7 @@ from myCSV import *
 from mybtree import *
 # import gzip
 import time
+from join import *
 def buildDictForAttr(filePath, attrIndx):
     """
     This funciton returns a dictionary that store the row index set for all tuples
@@ -82,5 +83,39 @@ def main():
 
 
 start = time.time()
-main()
+# main()
+fileName1 = 'review-5k.csv'
+dataFilePath = './data/' + fileName1
+filepathBtree = './btree/'
+
+# build btrees for all attributes
+buildTreeForAllAttr(fileName1, dataFilePath, filepathBtree)
+# btree1 = buildTreeForSingleAttr(fileName1, dataFilePath, filepathBtree, AttrId = 0, return_tree = True)
+
+#recover btree from btreeFile
+btreeFile1 = 'review-5k_Attr_1_.tree'
+btree1 = recoverFromPickle(btreeFile1, filepathBtree)
+
+fileName2 = 'review-20.csv'
+dataFilePath = './data/' + fileName2
+filepathBtree = './btree/'
+
+# build btrees for all attributes
+buildTreeForAllAttr(fileName2, dataFilePath, filepathBtree)
+# btree1 = buildTreeForSingleAttr(fileName1, dataFilePath, filepathBtree, AttrId = 0, return_tree = True)
+
+#recover btree from btreeFile
+btreeFile2 = 'review-20_Attr_1_.tree'
+btree2 = recoverFromPickle(btreeFile2, filepathBtree)
+
+a1 = double_join_filter(btree1, btree2, '=')
+
+btreeFile3 = 'review-20_Attr_5_.tree'
+btree3 = recoverFromPickle(btreeFile3, filepathBtree)
+
+btreeFile4 = 'review-5k_Attr_5_.tree'
+btree4 = recoverFromPickle(btreeFile4, filepathBtree)
+a2 = single_join_filter_one(btree3,'<',4)
+
+a3 = list(btree3.values(min = btree.minKey(), max = 4, excludemax=True))
 print('time = ', time.time() - start)
