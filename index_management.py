@@ -149,5 +149,4 @@ def main():
 
 
 start = time.time()
-main()
 print('time = ', time.time() - start)
