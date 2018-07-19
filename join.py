@@ -72,8 +72,12 @@ def double_join_filter(btree1, btree2, operator):
     j = 0
     output = []
     if operator == '<':
-        while (i < len(list1) - 1 or j < len(list2) - 1):
-            if i == len(list1) - 1:
+        while (i <= len(list1) - 1 or j <= len(list2) - 1):
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] < list2[j]:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] < list2[j]:
                     output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
                 j += 1
@@ -89,8 +93,12 @@ def double_join_filter(btree1, btree2, operator):
                     j += 1
 
     if operator == '<=':
-        while (i < len(list1) - 1 or j < len(list2) - 1):
-            if i == len(list1) - 1:
+        while (i <= len(list1) - 1 or j <= len(list2) - 1):
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] <= list2[j]:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] <= list2[j]:
                     output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
                 j += 1
@@ -107,7 +115,11 @@ def double_join_filter(btree1, btree2, operator):
     
     if operator == '=':
         while (i <= len(list1) - 1 and j <= len(list2) - 1):
-            if i == len(list1) - 1:
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] == list2[j]:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] == list2[j]:
                     output = output + [[list1[i], list2[j]]]
                 j += 1
@@ -152,8 +164,12 @@ def double_join_filter_plus(btree1, btree2, operator, value):
     j = 0
     output = []
     if operator == '<':
-        while (i < len(list1) - 1 or j < len(list2) - 1):
-            if i == len(list1) - 1:
+        while (i <= len(list1) - 1 or j <= len(list2) - 1):
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] < list2[j] + value:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] < list2[j] + value:
                     output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
                 j += 1
@@ -169,8 +185,12 @@ def double_join_filter_plus(btree1, btree2, operator, value):
                     j += 1
 
     if operator == '<=':
-        while (i < len(list1) - 1 or j < len(list2) - 1):
-            if i == len(list1) - 1:
+        while (i <= len(list1) - 1 or j <= len(list2) - 1):
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] <= list2[j] + value:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] <= list2[j] + value:
                     output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
                 j += 1
@@ -187,7 +207,11 @@ def double_join_filter_plus(btree1, btree2, operator, value):
     
     if operator == '=':
         while (i <= len(list1) - 1 and j <= len(list2) - 1):
-            if i == len(list1) - 1:
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] == list2[j] + value:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] == list2[j] + value:
                     output = output + [[list1[i], list2[j]]]
                 j += 1
@@ -202,6 +226,7 @@ def double_join_filter_plus(btree1, btree2, operator, value):
                     i += 1
                 else: 
                     j += 1
+    
     
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
     
@@ -232,8 +257,12 @@ def double_join_filter_multi(btree1, btree2, operator, value):
     j = 0
     output = []
     if operator == '<':
-        while (i < len(list1) - 1 or j < len(list2) - 1):
-            if i == len(list1) - 1:
+        while (i <= len(list1) - 1 or j <= len(list2) - 1):
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] < list2[j] * value:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] < list2[j] * value:
                     output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
                 j += 1
@@ -249,8 +278,12 @@ def double_join_filter_multi(btree1, btree2, operator, value):
                     j += 1
 
     if operator == '<=':
-        while (i < len(list1) - 1 or j < len(list2) - 1):
-            if i == len(list1) - 1:
+        while (i <= len(list1) - 1 or j <= len(list2) - 1):
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] <= list2[j] * value:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] <= list2[j] * value:
                     output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
                 j += 1
@@ -267,7 +300,11 @@ def double_join_filter_multi(btree1, btree2, operator, value):
     
     if operator == '=':
         while (i <= len(list1) - 1 and j <= len(list2) - 1):
-            if i == len(list1) - 1:
+            if i == len(list1) - 1 and j == len(list2) - 1:
+                if list1[i] == list2[j] * value:
+                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                break
+            elif i == len(list1) - 1:
                 if list1[i] == list2[j] * value:
                     output = output + [[list1[i], list2[j]]]
                 j += 1
@@ -283,8 +320,9 @@ def double_join_filter_multi(btree1, btree2, operator, value):
                 else: 
                     j += 1
     
+    
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
-
+    
     list_row = []
     for i in range(len(row_list)):
         list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
@@ -389,29 +427,80 @@ def permute_list(list_row_list):
     return output
     
 
-# list1 = [1,5,6,7]
-# list2 = [4,6]
-# output = []
-# i = 0
-# j = 0
-# operator = '='
-# if operator == '=':
-#     while (i <= len(list1) - 1 and j <= len(list2) - 1):
-#         if i == len(list1) - 1:
-#             if list1[i] == list2[j]:
-#                 output = output + [[list1[i], list2[j]]]
-#             j += 1
-#         elif j == len(list2) - 1:
-#             if list1[i] == list2[j]:
-#                 output = output + [[list1[i], list2[j]]]
-#             i += 1
-#         else:
-#             if list1[i] == list2[j]:
-#                 output = output + [[list1[i], list2[j]]]
-#             if list1[i] < list2[j]:
-#                 i += 1
-#             else: 
-#                 j += 1
+list1 = [1,3,5,7,9]
+list2 = [6,7,9]
+value = 0
+operator = '='
+i = 0
+j = 0
+output = []
+if operator == '<':
+    while (i <= len(list1) - 1 or j <= len(list2) - 1):
+        if i == len(list1) - 1 and j == len(list2) - 1:
+            if list1[i] < list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            break
+        elif i == len(list1) - 1:
+            if list1[i] < list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            j += 1
+        elif j == len(list2) - 1:
+            if list1[i] < list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            i += 1
+        else:
+            if list1[i] < list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                i += 1
+            else: 
+                j += 1
+
+if operator == '<=':
+    while (i < len(list1) - 1 or j < len(list2) - 1):
+        if i == len(list1) - 1:
+            if list1[i] <= list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            j += 1
+        elif j == len(list2) - 1:
+            if list1[i] <= list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            i += 1
+        else:
+            if list1[i] <= list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                i += 1
+            else: 
+                j += 1
+
+if operator == '=':
+    while (i <= len(list1) - 1 and j <= len(list2) - 1):
+        if i == len(list1) - 1 and j == len(list2) - 1:
+            if list1[i] == list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            break
+        elif i == len(list1) - 1:
+            if list1[i] == list2[j] + value:
+                output = output + [[list1[i], list2[j]]]
+            j += 1
+        elif j == len(list2) - 1:
+            if list1[i] == list2[j] + value:
+                output = output + [[list1[i], list2[j]]]
+            i += 1
+        else:
+            if list1[i] == list2[j] + value:
+                output = output + [[list1[i], list2[j]]]
+            if list1[i] < list2[j]:
+                i += 1
+            else: 
+                j += 1
+
+row_list = [[[item[0]], [item[1]]] for item in output]
+
+list_row = []
+for i in range(len(row_list)):
+    list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
+list_row = [[item[0], item[1]] for item in list_row]
+
 
     
 
