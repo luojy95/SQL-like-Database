@@ -18,7 +18,7 @@ def Main():
 	# sql_statement = "SELECT M.movie_facebook_likes, A.Film, M.Title  FROM movies.csv M JOIN oscars.csv A ON M.movie_title = A.Film JOIN business.csv B ON M.rating = B.stars AND M.sales < B.networth WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000) AND M.title LIKE 'Face'"
 	sql_statement = "SELECT M.movie_title, M.director_name, A.date, A.useful, A.cool FROM movies.csv M, review_500k.csv A"
 	#sql_statement = "SELECT * FROM movies.csv"
-	rowindice_result_from_selection = [[1000,2000,3000,4000], [2000,3000,4000,10000]]
+	rowindice_result_from_selection = [[1000,1000,1000,1000], [2000,3000,4000,10000]]
 	start = time.time()
 	ProjectAndPrint(sql_statement, rowindice_result_from_selection)
 	time_elapse = time.time()-start
@@ -240,8 +240,10 @@ def all_same(items):
 
 # This function take one open csv file, a list of row_indice for one csv, a list of attribute (in the SELECT part) as input and return the attribute name and value result in the tuple form. Note that this function service the FindValueinMultipleCsv() function as this function only accepted single filename and single row_indice list for one csv.
 def Findvalueincsv(filename, row_indice, volume_value_list):
-	# print(filename)
-	with open(filename, 'r', encoding="utf8") as filename_open:
+	#print(filename)
+	#name = 'review-500k.csv'
+	name = filename
+	with open(name, 'r', encoding="utf8") as filename_open:
 		f = csv.reader(filename_open)
 		filename_open.seek(0)
 		row1 = next(f)
@@ -265,7 +267,10 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 		for k, row in enumerate(f):
 	#		for n, ri in enumerate(row_indice):
 	#			if k+2 == ri:
-			if k+2 in row_indice:
+			for j, ind in enumerate(row_indice):
+				if ind == k+2:
+					#print("k is:",k,"row is:",ind)
+				#if row_indice in row_indice:
 					for j, h in enumerate(volume_index):
 						#print(j)
 						#print(k+2, row[h])
@@ -275,18 +280,27 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 							attribute_tuple.append('')
 					#value_result.append(attribute_tuple)
 					#value_result.append(tuple(attribute_tuple))
-					row_indice.index(k+2)
-					value_result[row_indice.index(k+2)] = tuple(attribute_tuple)
+					indice_samevalue = indices(row_indice, k+2)
+					#print("indice_same value is:",indice_samevalue)
+					#row_indice.index(k+2)
+					#print(row_indice.index(k+2))
+					for insame in indice_samevalue:
+					# value_result[row_indice.index(k+2)] = tuple(attribute_tuple)
+						value_result[insame] = tuple(attribute_tuple)
 					#print(row_indice.index(k+2), k+2)
 					attribute_tuple = []
 			if k == row_indice[len(row_indice)-1]:
-					break
+				break
 
 		if volume_index == [] or value_result == []:
 			print("error: cannot find attribute in csv with referenced name or with the row indice")
 		#print(volume_value_list)	
 		attribute_name_tuple = tuple(attribute_name_list)
 	return attribute_name_tuple, value_result
+
+
+def indices(mylist, value):
+    return [i for i,x in enumerate(mylist) if x==value]
 
 
 # may need to find the corresponding tuplelist in another function. Currently assume the tuple list_for-csvs the same sequence as the distinct_csv_list. Here the csv_list is not the name but the list of opened result = csv.reader(filename) for time saving purpose
@@ -321,6 +335,9 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 
 # This function take a list of open csv file, a 2-level list of row_indice for multiple csv, a list of attribute (in the SELECT part) as input and return the attribute name and value result in the tuple form. 
 def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
+	# print("############")
+	# print(csv_list, tuplelist_for_csvs, attribute_list)
+	# print("$$$$")
 	result_list = []
 	final_result = []
 	#istinct_csv_list = set(csv_list)
@@ -328,35 +345,28 @@ def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 	final_attributelist = []
 	separate_attribute=[]
 	separate_result = []
-	if attribute_list == [-1]:
-		attribute_list = [-1]*len(csv_list)
 	# for i, file in enumerate(distinct_csv_list):
 	# 	separate_attribute, separate_result = Findvalueincsv(file, tuplelist_for_csvs[:,i], attribute_list)
 	# 	result_list.append(separate_result)
 	# 	attributelist_for_csvs.append(separate_attribute)
 	# 	separate_attribute=[]
 	# 	separate_result = []
-	if all_same(csv_list):
-		# final_result = result_list
-		# final_attributelist = attributelist_for_csvs[0]
-		# print(csv_list[0], tuplelist_for_csvs[0], attribute_list[0])
-		#print(csv_list[0])
-		final_attributelist, final_result = Findvalueincsv(csv_list[0], tuplelist_for_csvs[0], attribute_list)
-	if all_same(csv_list) == False:
-		for i, file in enumerate(csv_list):
-			# print("@#@#@#@#@#@#@#@#@#@#@#@")
-			# print(csv_list[i], tuplelist_for_csvs[i], attribute_list[i])
-			separate_attribute, separate_result = Findvalueincsv(file, tuplelist_for_csvs[i], [attribute_list[i]])
-			# print(separate_attribute)
-			# print(separate_result)
-			# print("within the function--------------")
-			final_attributelist += separate_attribute
-			#final_result += separate_result
-			#print(separate_result)
-			if final_result == []:
-				final_result = separate_result
-			else:
-				final_result = [final_result[n] + separate_result[n] for n in range(len(separate_result))]
+	# if all_same(csv_list):
+	# 	final_attributelist, final_result = Findvalueincsv(csv_list[0], tuplelist_for_csvs[0], attribute_list)
+	# if all_same(csv_list) == False:
+	for i, file in enumerate(csv_list):
+		# print(csv_list[i], tuplelist_for_csvs[i], attribute_list[i])
+		separate_attribute, separate_result = Findvalueincsv(file, tuplelist_for_csvs[i], [attribute_list[i]])
+		# print(separate_attribute)
+		# print(separate_result)
+		# print("within the function--------------")
+		final_attributelist += separate_attribute
+		#final_result += separate_result
+		# print(separate_result)
+		if final_result == []:
+			final_result = separate_result
+		else:
+			final_result = [final_result[n] + separate_result[n] for n in range(len(separate_result))]
 	# if len(csv_list) == 3:
 	# 	final_result = [[result_list[0][i], result_list[1][i], result_list[2][i]] for i in range(len(result_list[0]))]
 	# 	final_attributelist = [attributelist_for_csvs[0], attributelist_for_csvs[1], attributelist_for_csvs[2]]
@@ -397,6 +407,7 @@ def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 
 if __name__ == '__main__':
 	Main()
+
 
 
 
