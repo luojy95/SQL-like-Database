@@ -176,6 +176,22 @@ def ProjectCsvandAlias(sql):
 		print("error: require alias for SELECT as the final table is from multiple CSVs")
 	return project_csv_name, project_alias_name, project_attribute_name
 
+def Findcsvname(alias):
+	pair_csv, pair_alias = PairCsvandAlias(sql)
+	for i, j in enumerate(pair_alias):
+		if j = alias:
+			return pair_csv[i]
+
+def FindCsvnameandAttribute(tok):
+	csv_name = ''
+	alias = ''
+	attribute = ''
+	if isinstance(tok, sqlparse.sql.Identifier):
+		alias = tok.get_parent_name()
+		attribute = get_real_name()
+	csv_name = Findcsvname(alias)
+	return csv_name, attribute
+
 
 # As the list of indice is in the sequence of appearance in the FROM part, this function will match the indice list according the attribute and csv in the SELECT part
 def MatchIndicewithAliasAttribute(sql, rowindice_result_from_selection):
@@ -407,10 +423,6 @@ def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 
 if __name__ == '__main__':
 	Main()
-
-
-
-
 
 
 
