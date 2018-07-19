@@ -1,0 +1,47 @@
+CREATE TABLE test_review5k (funny INT, user_id varchar(1000), review_id varchar(255), text TEXT, business_id varchar(255),stars INT, date varchar(255), useful INT, cool INT);
+
+
+
+/Users/zhoutongjiang/Documents/GitHub/CS411_Track2_CSV_plus/data
+
+LOAD DATA INFILE '/Users/zhoutongjiang/Documents/GitHub/CS411_Track2_CSV_plus/data/review-5k.csv' INTO TABLE test_review5k FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\r\n' IGNORE 1 ROWS;
+
+LOAD DATA INFILE '/Users/zhoutongjiang/Documents/GitHub/CS411_Track2_CSV_plus/data/review-20.csv' INTO TABLE test_review20 FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\r\n' IGNORE 1 ROWS;
+
+
+
+
+
+CREATE TABLE test_review20 (funny INT, user_id varchar(1000), review_id varchar(255), text LONGBLOB, business_id varchar(255),stars INT, date varchar(255), useful INT, cool INT);
+
+
+————————————
+
+SELECT * FROM test_review5k WHERE funny = -1;
+
+SELECT test_review5k.user_id FROM test_review5k, test_review20 WHERE test_review5k.user_id=test_review20.user_id;
++------------------------+
+| user_id                |
++------------------------+
+| cjpdDjZyprfyDG3RlkVG3w |
+| bjTcT8Ty4cJZhEOEo01FGA |
+| AXgRULmWcME7J6Ix3I--ww |
+| oU2SSOmsp_A8JYI7Z2JJ5w |
+| 0xtbPEna2Kei11vsU-U2Mw |
+| rW8q706dz5-NnXDzMwVkiw |
+| yx8vNXUL0D0HS8rUIC7AFA |
+| zXnH6W74FAJQ7q7b-NuBsA |
+| c5yp5hxwC1N98MjbV2LyWQ |
+| xJisL5w4wOgiYLokGMT_IA |
+| tgV6tsYQ66DZ3LQKvtC6cw |
+| Q-3YCVywc03w56wYtGlKvg |
+| Cx4UCow0zQgFQOp47RRRaA |
+| eqWEgMH-DCP74i82BEAZzw |
+| d0DGZRp6lHXGECJSc_nn-A |
+| IpLZ7RevQrFPJWYc9Gxymg |
+| kzyLOqiJvyw_FWFTw2rjiQ |
+| WZXp9-V2dqRRJqhGgRqueA |
+| XylT12exfdLiI_3uDLVIpw |
+| eqWEgMH-DCP74i82BEAZzw |
++------------------------+
+
