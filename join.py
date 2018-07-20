@@ -6,7 +6,7 @@ def single_join_filter_one(btree, operator, value):
     '''
     Inputs:
         @ btree: the btree that corresponds to the attribute will be compared
-        @ operator: Five operators supported: '<', '>', '=', '<=', '>='
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
         @ value: Rvalue
     Return:
         @ return a two level list. Eg. [[1,2,3,4]], the row list for the single csv.
