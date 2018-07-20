@@ -142,7 +142,7 @@ def double_join_filter(btree1, btree2, operator):
                 else: 
                     j += 1
     if operator == '<>':
-        output = except_condition_single([list1]+[list2])
+        return double_join_filter(btree1, btree2, '<') + double_join_filter(btree2, btree1, '<')
     
 #    return output
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
@@ -475,6 +475,18 @@ def A_AB_B_and(A, AB, B):
             output = output + [temp1+temp2]
     return output
 
+def A_AB_and(A, AB, id):
+    '''
+    
+    '''
+    output = []
+    for i in range(len(AB)):
+        temp1 = and_condition_single([AB[i][id]] + A)
+        temp2 = [AB[i][1]]
+        if len(temp1[0]) != 0 and len(temp2[0]) != 0:
+            output = output + [temp1+temp2]
+    return output
+
 
 def A_AB_B_or(A, AB, B):
     '''
@@ -497,6 +509,21 @@ def AB_AB(AB1, AB2):
     out = and_condition_single([A] + [B])[0]
     output = [[item[0], item[1]] for item in out]
     return output
+
+def AB_AC(AB, AC, id1, id2):
+    '''
+    
+    '''
+    temp = []
+    for i in range(len(AB)):
+        temp = or_condition_single([AB[i][id1]] + temp)
+    AB_new = A_AB_and(temp, AB, id1)
+    tem = []
+    for j in range(len(AC)):
+        tem = or_condition_single([AC[i][id2]] + tem)
+    AC_new = A_AB_and(tem, AC, id2)
+    return [AB_new, AC_new]
+    
 #def AB_AB_and(AB1, AB2):
 #    '''
 #    
