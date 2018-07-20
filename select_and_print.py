@@ -284,7 +284,7 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 	#		for n, ri in enumerate(row_indice):
 	#			if k+2 == ri:
 			for j, ind in enumerate(row_indice):
-				if ind == k+2:
+				if ind == k+1:
 					#print("k is:",k,"row is:",ind)
 				#if row_indice in row_indice:
 					for j, h in enumerate(volume_index):
@@ -296,7 +296,7 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 							attribute_tuple.append('')
 					#value_result.append(attribute_tuple)
 					#value_result.append(tuple(attribute_tuple))
-					indice_samevalue = indices(row_indice, k+2)
+					indice_samevalue = indices(row_indice, k+1)
 					#print("indice_same value is:",indice_samevalue)
 					#row_indice.index(k+2)
 					#print(row_indice.index(k+2))

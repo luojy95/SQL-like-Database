@@ -12,6 +12,7 @@ def single_join_filter_one(btree, operator, value):
     Return:
         @ return a two level list. Eg. [[1,2,3,4]], the row list for the single csv.
     '''
+    print(value)
     if operator == '<':
         value_list = list(btree.values(min = btree.minKey(), max = value, excludemax=True))
     elif operator == '<=':
@@ -21,7 +22,7 @@ def single_join_filter_one(btree, operator, value):
     elif operator == '>=':
         value_list = list(btree.values(min = value, max = btree.maxKey()))
     elif operator == '=':
-        value_list = btree.get(value)
+        value_list = [btree[value]]
     else:
         print('invalid operator')
         value_list = []
@@ -117,7 +118,7 @@ def double_join_filter(btree1, btree2, operator):
         while (i <= len(list1) - 1 and j <= len(list2) - 1):
             if i == len(list1) - 1 and j == len(list2) - 1:
                 if list1[i] == list2[j]:
-                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                    output = output + [[list1[i], list2[j]]]
                 break
             elif i == len(list1) - 1:
                 if list1[i] == list2[j]:
@@ -209,7 +210,7 @@ def double_join_filter_plus(btree1, btree2, operator, value):
         while (i <= len(list1) - 1 and j <= len(list2) - 1):
             if i == len(list1) - 1 and j == len(list2) - 1:
                 if list1[i] == list2[j] + value:
-                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                    output = output + [[list1[i], list2[j]]]
                 break
             elif i == len(list1) - 1:
                 if list1[i] == list2[j] + value:
@@ -222,7 +223,7 @@ def double_join_filter_plus(btree1, btree2, operator, value):
             else:
                 if list1[i] == list2[j] + value:
                     output = output + [[list1[i], list2[j]]]
-                if list1[i] < list2[j]:
+                if list1[i] < list2[j] + value:
                     i += 1
                 else: 
                     j += 1
@@ -302,7 +303,7 @@ def double_join_filter_multi(btree1, btree2, operator, value):
         while (i <= len(list1) - 1 and j <= len(list2) - 1):
             if i == len(list1) - 1 and j == len(list2) - 1:
                 if list1[i] == list2[j] * value:
-                    output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                    output = output + [[list1[i], list2[j]]]
                 break
             elif i == len(list1) - 1:
                 if list1[i] == list2[j] * value:
@@ -315,7 +316,7 @@ def double_join_filter_multi(btree1, btree2, operator, value):
             else:
                 if list1[i] == list2[j] * value:
                     output = output + [[list1[i], list2[j]]]
-                if list1[i] < list2[j]:
+                if list1[i] < list2[j] * value:
                     i += 1
                 else: 
                     j += 1
@@ -359,7 +360,7 @@ def or_condition_single(list_row_list):
     output = list_row_list[0]
     for i in range(len(list_row_list)):
         output = set(list_row_list[i]).union(output)
-    return list(output)  
+    return [list(output)]  
 
 def except_condition_single(list_row_list):
     '''
@@ -374,9 +375,9 @@ def except_condition_single(list_row_list):
         @ return a two level list the same as single join function. like [[4,5]]     
     '''
     output = set(list_row_list[0]).difference(list_row_list[1])
-    return list(output)  
+    return [list(output)]  
 
-def and_condition_double(list_row_list1, list_row_list2):
+def and_condition_double(list_row_list1, list_row_list2, id1, id2):
     '''
     Inputs:
         @ list_row_list1: output from the above double join functions or from this function.
@@ -399,8 +400,8 @@ def and_condition_double(list_row_list1, list_row_list2):
     output = []
     for i in range(len(list_row_list1)):
         for j in range(len(list_row_list2)):
-            if list_row_list1[i][0] == list_row_list2[j][0]:
-                temp = list_row_list1[i] + [list_row_list2[j][1]]
+            if list_row_list1[i][id1] == list_row_list2[j][id2]:
+                temp = list_row_list1[i] + [list_row_list2[j][1-id2]]
                 output.append(temp)
     return output
 
@@ -419,45 +420,54 @@ def permute_list(list_row_list):
                                             
     '''
     output = []
+    if len(list_row_list) == 0:
+        return output
     for i in range(len(list_row_list[0])):
         temp = []
         for j in range(len(list_row_list)):
             temp = temp + [list_row_list[j][i]]
         output = output + [temp]
     return output
-    
 
-list1 = [1,3,5,7,9]
-list2 = [6,7,9,21]
-value = 0
-operator = '<'
+def single_to_double(list_row):
+    '''
+    
+    '''
+    output = []
+    for i in range(len(list_row[0])):
+        output = output + [[list_row[0][i]]]
+    return output
+
+
+list1 = [1,2,3,5,9,10,11,14,23]
+list2 = [2,4,6,9,10,14]
 i = 0
 j = 0
 output = []
-if operator == '<':
-    while (i <= len(list1) - 1 or j <= len(list2) - 1):
+operator = '='
+if operator == '=':    
+    while (i <= len(list1) - 1 and j <= len(list2) - 1):
         if i == len(list1) - 1 and j == len(list2) - 1:
-            if list1[i] < list2[j] + value:
-                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            if list1[i] == list2[j]:
+                output = output + [[list1[i], list2[j]]]
             break
         elif i == len(list1) - 1:
-            if list1[i] < list2[j] + value:
-                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            if list1[i] == list2[j]:
+                output = output + [[list1[i], list2[j]]]
             j += 1
         elif j == len(list2) - 1:
-            if list1[i] < list2[j] + value:
-                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            if list1[i] == list2[j]:
+                output = output + [[list1[i], list2[j]]]
             i += 1
         else:
-            if list1[i] < list2[j] + value:
-                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            if list1[i] == list2[j]:
+                output = output + [[list1[i], list2[j]]]
+            if list1[i] < list2[j]:
                 i += 1
             else: 
                 j += 1
-
-
-
     
+        
 
 
 
