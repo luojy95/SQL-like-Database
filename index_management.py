@@ -117,5 +117,5 @@ btreeFile4 = 'review-5k_Attr_5_.tree'
 btree4 = recoverFromPickle(btreeFile4, filepathBtree)
 a2 = single_join_filter_one(btree3,'<',4)
 
-a3 = list(btree3.values(min = btree.minKey(), max = 4, excludemax=True))
+a3 = list(btree3.values(min = btree3.minKey(), max = 4, excludemax=True))
 print('time = ', time.time() - start)

@@ -427,6 +427,34 @@ def permute_list(list_row_list):
     return output
     
 
+list1 = [1,3,5,7,9]
+list2 = [6,7,9,21]
+value = 0
+operator = '<'
+i = 0
+j = 0
+output = []
+if operator == '<':
+    while (i <= len(list1) - 1 or j <= len(list2) - 1):
+        if i == len(list1) - 1 and j == len(list2) - 1:
+            if list1[i] < list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            break
+        elif i == len(list1) - 1:
+            if list1[i] < list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            j += 1
+        elif j == len(list2) - 1:
+            if list1[i] < list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+            i += 1
+        else:
+            if list1[i] < list2[j] + value:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
+                i += 1
+            else: 
+                j += 1
+
 
 
     
