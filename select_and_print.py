@@ -179,7 +179,7 @@ def ProjectCsvandAlias(sql):
 def Findcsvname(alias):
 	pair_csv, pair_alias = PairCsvandAlias(sql)
 	for i, j in enumerate(pair_alias):
-		if j = alias:
+		if j == alias:
 			return pair_csv[i]
 
 def FindCsvnameandAttribute(tok):

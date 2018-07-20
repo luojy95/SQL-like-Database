@@ -29,7 +29,7 @@ def getAttrID(file_path, attr):
         fileName
         attr(string):the name of the attribute
     Returns:
-        attrlist: list of attributes
+        attrId: Column No. of the attribute
     """
 
     with open(file_path, 'r', encoding="ISO-8859-1") as f:

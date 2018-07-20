@@ -4,6 +4,7 @@ from myCSV import *
 from index_management import buildTreeForSingleAttr
 import ntpath
 
+
 def main():
     parser = OptionParser()
     # Define option to read csv files
@@ -59,6 +60,7 @@ def main():
                         print("Index for " + Attribs[i] + " build successfully")
         elif selection == 2:
             sql = input("Input SQL Command:\n")
+
             print("Running Query " + sql)
         elif selection == 3:
             print("Exit!")
