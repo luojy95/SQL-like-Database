@@ -486,9 +486,12 @@ def A_AB_and(A, AB, id):
     output = []
     for i in range(len(AB)):
         temp1 = and_condition_single([AB[i][id]] + A)
-        temp2 = [AB[i][1]]
+        temp2 = [AB[i][1-id]]
         if len(temp1[0]) != 0 and len(temp2[0]) != 0:
-            output = output + [temp1+temp2]
+            if id == 0:           
+                output = output + [temp1+temp2]
+            else:
+                output = output + [temp2+temp1]
     return output
 
 
@@ -528,7 +531,7 @@ def AB_AC(AB, AC, id1, id2):
     AB_new = A_AB_and(temp, AB, id1)
     tem = []
     for j in range(len(AC)):
-        tem = or_condition_single([AC[i][id2]] + tem)
+        tem = or_condition_single([AC[j][id2]] + tem)
     AC_new = A_AB_and(tem, AC, id2)
     return [AB_new, AC_new]
     
