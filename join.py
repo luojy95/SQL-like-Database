@@ -143,6 +143,9 @@ def double_join_filter(btree1, btree2, operator):
                     j += 1
     if operator == '<>':
         output = except_condition_single([list1]+[list2])
+    else:
+        print('invalid operator')
+        return []
     
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
     
@@ -239,6 +242,9 @@ def double_join_filter_plus(btree1, btree2, operator, value):
         list2 = [item + value for item in output]
         output = except_condition_single([list1]+[list2])
         
+    else:
+        print('invalid operator')
+        return []    
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
     
     list_row = []
@@ -333,7 +339,9 @@ def double_join_filter_multi(btree1, btree2, operator, value):
     if operator == '<>':
         list2 = [item * value for item in output]
         output = except_condition_single([list1]+[list2])
-    
+    else:
+        print('invalid operator')
+        return []
     
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
     
