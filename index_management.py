@@ -220,7 +220,7 @@ filepathBtree = './btree/'
 # Testcase 1
 ID = getAttrID(dataFilePath1, 'director_name')
 btree1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
-list1 = single_join_filter_one(btree1,'=','ANG LEE')
+list1 = single_join_filter_one(btree1,'<>','ANG LEE')
 
 ID = getAttrID(dataFilePath1, 'imdb_score')
 btree2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)

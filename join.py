@@ -21,6 +21,14 @@ def single_join_filter_one(btree, operator, value):
         value_list = list(btree.values(min = value, max = btree.maxKey()))
     elif operator == '=':
         value_list = [btree[value]]
+    elif operator == '<>':
+        ex_value_list = btree[value]
+        all_value_list = list(btree.values())
+        temp = []
+        for i in range(len(all_value_list)):
+            temp = temp + all_value_list[i]
+        out = except_condition_single([temp]+[ex_value_list])
+        return out
     else:
         print('invalid operator')
         value_list = []
@@ -59,7 +67,7 @@ def double_join_filter(btree1, btree2, operator):
           Can be any comparable type.
         @ btree2: the btree that corresponds to the attribute in the second csv file that will be compared.
           Can be any comparable type.
-        @ operator: Three operators supported: '<', '<=', '=' (Symmetric)
+        @ operator: Three operators supported: '<', '<=', '=', '<>' (Symmetric)
     Return:
         @ return a two level list. Inner level must be of length 2, 
           which corresponds to the row for the first and second csv files. 
@@ -133,7 +141,8 @@ def double_join_filter(btree1, btree2, operator):
                     i += 1
                 else: 
                     j += 1
-    
+    if operator == '<>':
+        output = except_condition_single([list1]+[list2])
     
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
     
@@ -150,7 +159,7 @@ def double_join_filter_plus(btree1, btree2, operator, value):
           Must be double or int type.
         @ btree2: the btree that corresponds to the attribute in the second csv file that will be compared.
           Must be double or int type.
-        @ operator: Three operators supported: '<', '<=', '=' (Symmetric)
+        @ operator: Three operators supported: '<', '<=', '=', '<>' (Symmetric)
         @ value: the value that will be added to the right side of the equation.
     Return:
         @ return a two level list. Inner level must be of length 2, 
@@ -226,7 +235,10 @@ def double_join_filter_plus(btree1, btree2, operator, value):
                 else: 
                     j += 1
     
-    
+    if operator == '<>':
+        list2 = [item + value for item in output]
+        output = except_condition_single([list1]+[list2])
+        
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
     
     list_row = []
@@ -243,7 +255,7 @@ def double_join_filter_multi(btree1, btree2, operator, value):
           Must be double or int type.
         @ btree2: the btree that corresponds to the attribute in the second csv file that will be compared.
           Must be double or int type.
-        @ operator: Three operators supported: '<', '<=', '=' (Symmetric)
+        @ operator: Three operators supported: '<', '<=', '=', '<>' (Symmetric)
         @ value: the value that will be multiplied to the right side of the equation.
     Return:
         @ return a two level list. Inner level must be of length 2, 
@@ -318,6 +330,9 @@ def double_join_filter_multi(btree1, btree2, operator, value):
                     i += 1
                 else: 
                     j += 1
+    if operator == '<>':
+        list2 = [item * value for item in output]
+        output = except_condition_single([list1]+[list2])
     
     
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
