@@ -2,6 +2,8 @@ import sqlparse
 import csv
 import time
 import pandas as pd
+from prettytable import PrettyTable
+#from tabulate import tabulate
 #sql_statement = 'select xman.attr from foo'
 # sql_statement = "SELECT M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON M.movie_title = A.Film JOIN business.csv B ON M.rating = B.stars AND M.sales < B.networth WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000) AND M.title LIKE 'Face'"
 # parsed = sqlparse.parse(sql_statement)
@@ -16,9 +18,11 @@ import pandas as pd
 
 def Main():
 	# sql_statement = "SELECT M.movie_facebook_likes, A.Film, M.Title  FROM movies.csv M JOIN oscars.csv A ON M.movie_title = A.Film JOIN business.csv B ON M.rating = B.stars AND M.sales < B.networth WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000) AND M.title LIKE 'Face'"
-	sql_statement = "SELECT M.movie_title, M.director_name, A.date, A.useful, A.cool FROM movies.csv M, review_500k.csv A"
+	#sql_statement = "SELECT M.movie_title, M.director_name, A.date, A.useful, A.cool FROM movies.csv M, review_500k.csv A"
+	sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
 	#sql_statement = "SELECT * FROM movies.csv"
-	rowindice_result_from_selection = [[1000,1000,1000,1000], [2000,3000,4000,10000]]
+	#rowindice_result_from_selection = [[1000,1000,1000,1000], [2000,3000,4000,10000]]
+	rowindice_result_from_selection = [[18,22,30,32],[3928,3928,1894,783]]
 	start = time.time()
 	ProjectAndPrint(sql_statement, rowindice_result_from_selection)
 	time_elapse = time.time()-start
@@ -78,9 +82,22 @@ def ProjectAndPrint(sql_statement, rowindice_result_from_selection):
 	# print("start prepare step 2----")
 	pro_csv_names, pro_alias_names, pro_attribute_names = ProjectCsvandAlias(sql_statement)
 	fin_attributes, fin_result = FindValueinMultipleCsv(pro_csv_names, matched_rowindice_lists, pro_attribute_names)
-	print("--------the result of query is as followed:------------")
-	print(fin_attributes)
-	printlist(fin_result)
+	print("---------------------the result of query is as followed:-----------------------")
+	# print(fin_attributes)
+	# printlist(fin_result)
+	pr = PrettyTable(fin_attributes)
+	for i, row in enumerate(fin_result):
+		pr.add_row(row)
+	print(pr)
+
+	# print_result = []
+	# print_result = [tuple(fin_attributes)]
+	# for i, row in enumerate(fin_result):
+	# 	print_result.append(row)
+	# #pr = pd.DataFrame(print_result)
+	# print(pd.DataFrame(print_result))
+
+	
 	#time_elapse = time.time()-start
 	#print(time_elapse)
 
@@ -188,7 +205,7 @@ def FindCsvnameandAttribute(tok):
 	attribute = ''
 	if isinstance(tok, sqlparse.sql.Identifier):
 		alias = tok.get_parent_name()
-		attribute = get_real_name()
+		attribute = tok.get_real_name()
 	csv_name = Findcsvname(alias)
 	return csv_name, attribute
 
@@ -423,6 +440,10 @@ def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 
 if __name__ == '__main__':
 	Main()
+
+
+
+
 
 
 
