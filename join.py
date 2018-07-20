@@ -143,17 +143,15 @@ def double_join_filter(btree1, btree2, operator):
                     j += 1
     if operator == '<>':
         output = except_condition_single([list1]+[list2])
-    else:
-        print('invalid operator')
-        return []
     
+#    return output
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
-    
-    list_row = []
-    for i in range(len(row_list)):
-        list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
-    list_row = [[item[0], item[1]] for item in list_row]
-    return list_row
+    return row_list
+#    list_row = []
+#    for i in range(len(row_list)):
+#        list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
+#    list_row = [[item[0], item[1]] for item in list_row]
+#    return list_row
 
 def double_join_filter_plus(btree1, btree2, operator, value):
     '''
@@ -242,17 +240,14 @@ def double_join_filter_plus(btree1, btree2, operator, value):
         list2 = [item + value for item in output]
         output = except_condition_single([list1]+[list2])
         
-    else:
-        print('invalid operator')
-        return []    
+#    return output
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
-    
-    list_row = []
-    for i in range(len(row_list)):
-        list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
-    list_row = [[item[0], item[1]] for item in list_row]
-    return list_row
-
+    return row_list
+#    list_row = []
+#    for i in range(len(row_list)):
+#        list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
+#    list_row = [[item[0], item[1]] for item in list_row]
+#    return list_row
 
 def double_join_filter_multi(btree1, btree2, operator, value):
     '''
@@ -339,17 +334,14 @@ def double_join_filter_multi(btree1, btree2, operator, value):
     if operator == '<>':
         list2 = [item * value for item in output]
         output = except_condition_single([list1]+[list2])
-    else:
-        print('invalid operator')
-        return []
-    
+#    return output
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
-    
-    list_row = []
-    for i in range(len(row_list)):
-        list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
-    list_row = [[item[0], item[1]] for item in list_row]
-    return list_row
+    return row_list
+#    list_row = []
+#    for i in range(len(row_list)):
+#        list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
+#    list_row = [[item[0], item[1]] for item in list_row]
+#    return list_row
 
 def and_condition_single(list_row_list):
     '''
@@ -459,37 +451,104 @@ def single_to_double(list_row):
         output = output + [[list_row[0][i]]]
     return output
 
+def cross_prod(row_list):
+    '''
+    
+    '''
+#    row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
+    
+    list_row = []
+    for i in range(len(row_list)):
+        list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
+    list_row = [[item[0], item[1]] for item in list_row]
+    return list_row
 
-list1 = [1,2,3,5,9,10,11,14,23]
-list2 = [2,4,6,9,10,14]
+def A_AB_B_and(A, AB, B):
+    '''
+    
+    '''
+    output = []
+    for i in range(len(AB)):
+        temp1 = and_condition_single([AB[i][0]] + A)
+        temp2 = and_condition_single([AB[i][1]] + B)
+        if len(temp1[0]) != 0 and len(temp2[0]) != 0:
+            output = output + [temp1+temp2]
+    return output
+
+
+def A_AB_B_or(A, AB, B):
+    '''
+    
+    '''
+    output = []
+    for i in range(len(AB)):
+        temp1 = or_condition_single([AB[i][0]] + A)
+        temp2 = or_condition_single([AB[i][1]] + B)
+        if len(temp1[0]) != 0 and len(temp2[0]) != 0:
+            output = output + [temp1+temp2]
+    return output
+
+def AB_AB(AB1, AB2):
+    '''
+    
+    '''
+    A = [(item[0], item[1]) for item in AB1]
+    B = [(item[0], item[1]) for item in AB2]
+    out = and_condition_single([A] + [B])[0]
+    output = [[item[0], item[1]] for item in out]
+    return output
+#def AB_AB_and(AB1, AB2):
+#    '''
+#    
+#    '''
+#    if len(AB1 > AB2):
+#        a = AB2
+#        b = AB1
+#    else:
+#        a = AB1
+#        b = AB2
+#    for i in range(len(a)):
+#        for j in range(len(a[0][0])):
+#            for k in range(len(b)):
+#                if a[i][j] in 
+
+
+'''
+list1 = list(btree_a2.keys())#[1,2,3,5,9,10,11,14,23]
+list2 = list(btree_a1.keys())#[1,2,3,5,9,10,11,14,23]
 i = 0
 j = 0
 output = []
-operator = '='
-if operator == '=':    
-    while (i <= len(list1) - 1 and j <= len(list2) - 1):
+operator = '<'
+if operator == '<':    
+    while (i <= len(list1) - 1 or j <= len(list2) - 1):
         if i == len(list1) - 1 and j == len(list2) - 1:
-            if list1[i] == list2[j]:
-                output = output + [[list1[i], list2[j]]]
+            if list1[i] < list2[j]:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
             break
         elif i == len(list1) - 1:
-            if list1[i] == list2[j]:
-                output = output + [[list1[i], list2[j]]]
+            if list1[i] < list2[j]:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
             j += 1
         elif j == len(list2) - 1:
-            if list1[i] == list2[j]:
-                output = output + [[list1[i], list2[j]]]
+            if list1[i] < list2[j]:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
             i += 1
         else:
-            if list1[i] == list2[j]:
-                output = output + [[list1[i], list2[j]]]
             if list1[i] < list2[j]:
+                output = output + list(list(itertools.product([list1[i]], list2[j:len(list2)])))
                 i += 1
             else: 
                 j += 1
-    
-        
+row_list = [[btree_a2[item[0]], btree_a1[item[1]]] for item in output]
 
+list_row = []
+for i in range(len(row_list)):
+    list_row = list_row + list(itertools.product(row_list[i][0],row_list[i][1]))
+list_row = [[item[0], item[1]] for item in list_row]
+    
+#double_join_filter(btree_a2,btree_a1,'<')        
+'''
 
 
 
