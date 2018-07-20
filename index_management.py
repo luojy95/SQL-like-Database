@@ -232,9 +232,9 @@ filepathBtree = './btree/'
 # Testcase 2
 fileName2 = 'oscars.csv'
 dataFilePath2 = './data/' + fileName2
-ID = getAttrID(dataFilePath2, 'Winner')
-btree3 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
-list3 = single_join_filter_one(btree3,'=',1)
+#ID = getAttrID(dataFilePath2, 'Winner')
+#btree3 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
+#list3 = single_join_filter_one(btree3,'=',1)
 #
 #ID = getAttrID(dataFilePath2, 'Award')
 #btree4 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
@@ -270,48 +270,48 @@ list3 = single_join_filter_one(btree3,'=',1)
 # Testcase 4
 # SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars A1 JOIN oscars A2 ON (A1.Film = A2.Film) 
 # WHERE A1.Film <> '' AND A1.Winner = 1 AND A2.Winner=1 AND A1.Award > A2.Award AND A1.Year > 2010;
-ID1 = getAttrID(dataFilePath2, 'Film')
-btree_f1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
-ID2 = getAttrID(dataFilePath2, 'Film')
-btree_f2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID2, return_tree = True, isNumber = False)
-ID3 = getAttrID(dataFilePath2, 'Winner')
-btree_w1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID3, return_tree = True, isNumber = True)
-ID4 = getAttrID(dataFilePath2, 'Winner')
-btree_w2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID4, return_tree = True, isNumber = True)
-ID5 = getAttrID(dataFilePath2, 'Award')
-btree_a1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID5, return_tree = True, isNumber = False)
-ID6 = getAttrID(dataFilePath2, 'Award')
-btree_a2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID6, return_tree = True, isNumber = False)
-ID7 = getAttrID(dataFilePath2, 'Year')
-btree_y1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID7, return_tree = True, isNumber = True)
-start = time.time()
-list_5_1 = double_join_filter(btree_f1,btree_f2,'=') # AB
-list_5_2 = single_join_filter_one(btree_f1,'<>','') 
-list_5_3 = single_join_filter_one(btree_w1,'=',1)
-list_5_4 = single_join_filter_one(btree_w2,'=',1)
-list_5_5 = double_join_filter(btree_a2,btree_a1,'<') # AB
-list_5_6 = single_join_filter_one(btree_y1,'>',2010)
-
-temp1 = and_condition_single(list_5_2+list_5_3+list_5_6)
-temp2 = list_5_4
-temp11 = A_AB_B_and(temp1,list_5_5,temp2)
-temp12 = A_AB_B_and(temp1,list_5_1,temp2)
-temp21 = cross_prod(temp11)
-temp22 = cross_prod(temp12)
-
-out1 = AB_AB(temp21, temp22)
-out2 = permute_list(out1)
-
-
-
-temp1 = single_to_double(and_condition_single(list_5_6+list_5_2+list_5_3))
-temp2 = single_to_double(list_5_4)
-temp12 = list_5_1
-out1 = and_condition_double(temp1,temp12,0,0) #12
-out2 = and_condition_double(temp2,out1,0,1)   #21
-out3 = and_condition_double(temp2,temp12,0,1) #21
-out4 = and_condition_double(temp1,out3,0,1)   #12
-print(time.time() - start)
+#ID1 = getAttrID(dataFilePath2, 'Film')
+#btree_f1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
+#ID2 = getAttrID(dataFilePath2, 'Film')
+#btree_f2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID2, return_tree = True, isNumber = False)
+#ID3 = getAttrID(dataFilePath2, 'Winner')
+#btree_w1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID3, return_tree = True, isNumber = True)
+#ID4 = getAttrID(dataFilePath2, 'Winner')
+#btree_w2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID4, return_tree = True, isNumber = True)
+#ID5 = getAttrID(dataFilePath2, 'Award')
+#btree_a1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID5, return_tree = True, isNumber = False)
+#ID6 = getAttrID(dataFilePath2, 'Award')
+#btree_a2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID6, return_tree = True, isNumber = False)
+#ID7 = getAttrID(dataFilePath2, 'Year')
+#btree_y1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID7, return_tree = True, isNumber = True)
+#start = time.time()
+#list_5_1 = double_join_filter(btree_f1,btree_f2,'=') # AB
+#list_5_2 = single_join_filter_one(btree_f1,'<>','') 
+#list_5_3 = single_join_filter_one(btree_w1,'=',1)
+#list_5_4 = single_join_filter_one(btree_w2,'=',1)
+#list_5_5 = double_join_filter(btree_a2,btree_a1,'<') # AB
+#list_5_6 = single_join_filter_one(btree_y1,'>',2010)
+#
+#temp1 = and_condition_single(list_5_2+list_5_3+list_5_6)
+#temp2 = list_5_4
+#temp11 = A_AB_B_and(temp1,list_5_5,temp2)
+#temp12 = A_AB_B_and(temp1,list_5_1,temp2)
+#temp21 = cross_prod(temp11)
+#temp22 = cross_prod(temp12)
+#
+#out1 = AB_AB(temp21, temp22)
+#out2 = permute_list(out1)
+#
+#
+#
+#temp1 = single_to_double(and_condition_single(list_5_6+list_5_2+list_5_3))
+#temp2 = single_to_double(list_5_4)
+#temp12 = list_5_1
+#out1 = and_condition_double(temp1,temp12,0,0) #12
+#out2 = and_condition_double(temp2,out1,0,1)   #21
+#out3 = and_condition_double(temp2,temp12,0,1) #21
+#out4 = and_condition_double(temp1,out3,0,1)   #12
+#print(time.time() - start)
 
 
 # Testcase 5
@@ -320,31 +320,32 @@ print(time.time() - start)
 # (M1.director_name = M2.director_name AND M1.director_name = M3.director_name) 
 # WHERE M1.movie_title <> M2.movie_title AND M2.movie_title <> M3.movie_title AND 
 # M1.movie_title <> M3.movie_title AND M1.title_year < M2.title_year-15 AND M2.title_year < M3.title_year-15
-ID1 = getAttrID(dataFilePath1, 'movie_title')
-btree_mt1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
-ID2 = getAttrID(dataFilePath1, 'movie_title')
-btree_mt2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID2, return_tree = True, isNumber = False)
-ID3 = getAttrID(dataFilePath1, 'movie_title')
-btree_mt3 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID3, return_tree = True, isNumber = False)
-ID4 = getAttrID(dataFilePath1, 'director_name')
-btree_dn1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID4, return_tree = True, isNumber = False)
-ID5 = getAttrID(dataFilePath1, 'director_name')
-btree_dn2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID5, return_tree = True, isNumber = False)
-ID6 = getAttrID(dataFilePath1, 'director_name')
-btree_dn3 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID6, return_tree = True, isNumber = False)
-ID7 = getAttrID(dataFilePath1, 'title_year')
-btree_ty1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID7, return_tree = True, isNumber = True)
-ID8 = getAttrID(dataFilePath1, 'title_year')
-btree_ty2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID8, return_tree = True, isNumber = True)
-ID9 = getAttrID(dataFilePath1, 'title_year')
-btree_ty3 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID9, return_tree = True, isNumber = True)
-
-listab1 = double_join_filter(btree_dn1, btree_dn2, '=')
-#listac1 = double_join_filter(btree_mt1, btree_mt3, '<>')
-#listbc1 = double_join_filter(btree_mt2, btree_mt3, '<>')
+#ID1 = getAttrID(dataFilePath1, 'movie_title')
+#btree_mt1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
+#ID2 = getAttrID(dataFilePath1, 'movie_title')
+#btree_mt2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID2, return_tree = True, isNumber = False)
+#ID3 = getAttrID(dataFilePath1, 'movie_title')
+#btree_mt3 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID3, return_tree = True, isNumber = False)
+#ID4 = getAttrID(dataFilePath1, 'director_name')
+#btree_dn1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID4, return_tree = True, isNumber = False)
+#ID5 = getAttrID(dataFilePath1, 'director_name')
+#btree_dn2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID5, return_tree = True, isNumber = False)
+#ID6 = getAttrID(dataFilePath1, 'director_name')
+#btree_dn3 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID6, return_tree = True, isNumber = False)
+#ID7 = getAttrID(dataFilePath1, 'title_year')
+#btree_ty1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID7, return_tree = True, isNumber = True)
+#ID8 = getAttrID(dataFilePath1, 'title_year')
+#btree_ty2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID8, return_tree = True, isNumber = True)
+#ID9 = getAttrID(dataFilePath1, 'title_year')
+#btree_ty3 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID9, return_tree = True, isNumber = True)
+#start = time.time()
+#listab1 = double_join_filter(btree_dn1, btree_dn2, '=')
+##listac1 = double_join_filter(btree_mt1, btree_mt3, '<>')
+##listbc1 = double_join_filter(btree_mt2, btree_mt3, '<>')
 #listac2 = double_join_filter(btree_mt1, btree_mt3, '<>')
-listab2 = double_join_filter_plus(btree_ty1,btree_ty2,'<',15)
-listbc2 = double_join_filter_plus(btree_ty2,btree_ty3,'<',15)
+#listab2 = double_join_filter_plus(btree_ty1,btree_ty2,'<',15)
+#listbc2 = double_join_filter_plus(btree_ty2,btree_ty3,'<',15)
+#print(time.time() - start)
 
 
 
@@ -353,35 +354,43 @@ listbc2 = double_join_filter_plus(btree_ty2,btree_ty3,'<',15)
 ## Testcase 6
 ## SELECT M.movie_title, M.title_year, M.imdb_score, A1.Name, A1.Award, A2.Name, A2.Award FROM movies M JOIN oscars A1 
 ## JOIN oscars A2 ON (M.movie_title = A1.Film AND M.movie_title = A2.Film) WHERE A1.Award = 'Actor' AND A2.Award = 'Actress';
-#ID1 = getAttrID(dataFilePath1, 'movie_title')
-#btree_mt = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
-##ID2 = getAttrID(dataFilePath1, 'title_year')
-##btree_ty = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID2, return_tree = True, isNumber = True)
-##ID3 = getAttrID(dataFilePath1, 'title_year')
-##btree_is = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID3, return_tree = True, isNumber = True)
-#
-#ID4 = getAttrID(dataFilePath2, 'Name')
-#btree_n1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID4, return_tree = True, isNumber = False)
-#ID5 = getAttrID(dataFilePath2, 'Award')
-#btree_a1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID5, return_tree = True, isNumber = False)
-#ID6 = getAttrID(dataFilePath2, 'Film')
-#btree_f1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID6, return_tree = True, isNumber = False)
-#
-#ID4 = getAttrID(dataFilePath2, 'Name')
-#btree_n2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID4, return_tree = True, isNumber = False)
-#ID5 = getAttrID(dataFilePath2, 'Award')
-#btree_a2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID5, return_tree = True, isNumber = False)
-#ID6 = getAttrID(dataFilePath2, 'Film')
-#btree_f2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID6, return_tree = True, isNumber = False)
-#
-#sout0 = single_join_filter_one(btree_a1,'=','ACTOR') # A1
-#sout1 = single_join_filter_one(btree_a2,'=','ACTRESS') # A2
-#dout0 = double_join_filter(btree_mt,btree_f1,'=') # M_A1
-#dout1 = double_join_filter(btree_mt,btree_f2,'=') # M_A2
-#
+ID1 = getAttrID(dataFilePath1, 'movie_title')
+btree_mt = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
+ID2 = getAttrID(dataFilePath1, 'title_year')
+btree_ty = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID2, return_tree = True, isNumber = True)
+ID3 = getAttrID(dataFilePath1, 'title_year')
+btree_is = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID3, return_tree = True, isNumber = True)
+
+ID4 = getAttrID(dataFilePath2, 'Name')
+btree_n1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID4, return_tree = True, isNumber = False)
+ID5 = getAttrID(dataFilePath2, 'Award')
+btree_a1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID5, return_tree = True, isNumber = False)
+ID6 = getAttrID(dataFilePath2, 'Film')
+btree_f1 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID6, return_tree = True, isNumber = False)
+
+ID4 = getAttrID(dataFilePath2, 'Name')
+btree_n2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID4, return_tree = True, isNumber = False)
+ID5 = getAttrID(dataFilePath2, 'Award')
+btree_a2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID5, return_tree = True, isNumber = False)
+ID6 = getAttrID(dataFilePath2, 'Film')
+btree_f2 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID6, return_tree = True, isNumber = False)
+
+A1 = single_join_filter_one(btree_a1,'=','ACTOR') # A1
+A2 = single_join_filter_one(btree_a2,'=','ACTRESS') # A2
+M_A1 = double_join_filter(btree_mt,btree_f1,'=') # M_A1
+M_A2 = double_join_filter(btree_mt,btree_f2,'=') # M_A2
+
+
 #dout2 = single_to_double(sout0) # A1
 #dout3 = single_to_double(sout1) # A2
-#
+out1 = A_AB_and(A1, M_A1, 1) #A1_M
+out2 = A_AB_and(A2, M_A2, 1) #A2_M
+out3 = cross_prod(out1)
+out4 = cross_prod(out2)
+
+out5 = and_condition_double(out3,out4,1,1) #A1_M_A2
+out6 = permute_list(out5)
+
 #A1_M = and_condition_double(dout2,dout0,0,1)
 #A2_M = and_condition_double(dout3,dout1,0,1)
 #M_A1_A2 = and_condition_double(A1_M,A2_M,1,1)

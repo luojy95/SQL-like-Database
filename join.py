@@ -142,7 +142,11 @@ def double_join_filter(btree1, btree2, operator):
                 else: 
                     j += 1
     if operator == '<>':
-        return double_join_filter(btree1, btree2, '<') + double_join_filter(btree2, btree1, '<')
+#        temp  = double_join_filter(btree2, btree1, '<')
+#        temp1 = []
+#        for i in range(len(temp)):
+#            temp1 = [[temp[i][1]] + [temp[i][0]]] + temp1
+        return double_join_filter(btree1, btree2, '<') 
     
 #    return output
     row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
@@ -500,12 +504,16 @@ def A_AB_B_or(A, AB, B):
             output = output + [temp1+temp2]
     return output
 
-def AB_AB(AB1, AB2):
+def AB_AB(AB1, AB2, id):
     '''
     
     '''
-    A = [(item[0], item[1]) for item in AB1]
-    B = [(item[0], item[1]) for item in AB2]
+    if id == 0:       
+        A = [(item[0], item[1]) for item in AB1]
+        B = [(item[0], item[1]) for item in AB2]
+    if id == 1:
+        A = [(item[0], item[1]) for item in AB1]
+        B = [(item[1], item[0]) for item in AB2]        
     out = and_condition_single([A] + [B])[0]
     output = [[item[0], item[1]] for item in out]
     return output
@@ -576,8 +584,11 @@ list_row = [[item[0], item[1]] for item in list_row]
     
 #double_join_filter(btree_a2,btree_a1,'<')        
 '''
-
-
+a = [[[1, 2], [3, 4, 5]], [[1, 2, 4], [3, 5, 4]]]
+temp1 = []
+for i in range(len(a)):
+    temp1 = [[a[i][1]] + [a[i][0]]] + temp1
+temp2 = temp1 + a
 
 
 
