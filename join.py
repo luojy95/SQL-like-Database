@@ -1,5 +1,4 @@
 import itertools
-from itertools import product
 from myCSV import *
 from mybtree import *
     
@@ -12,7 +11,6 @@ def single_join_filter_one(btree, operator, value):
     Return:
         @ return a two level list. Eg. [[1,2,3,4]], the row list for the single csv.
     '''
-    print(value)
     if operator == '<':
         value_list = list(btree.values(min = btree.minKey(), max = value, excludemax=True))
     elif operator == '<=':
@@ -157,7 +155,7 @@ def double_join_filter_plus(btree1, btree2, operator, value):
     Return:
         @ return a two level list. Inner level must be of length 2, 
           which corresponds to the row for the first and second csv files. 
-          Eg. [[1,2],[2,3],[1,4],...] not [[1,2,3],[4,5,6],...]    
+          Eg. [[1,2],[2,3],[1,4],...] not [[1,2,3],[4,5,6],...]   
     '''
     list1 = list(btree1.keys())
     list2 = list(btree2.keys())
