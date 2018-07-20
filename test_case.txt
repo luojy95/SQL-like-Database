@@ -1,3 +1,190 @@
+
+
+
+CREATE TABLE movies (movie_title varchar(255), title_year INT, director_name varchar(255), language varchar(255), country varchar(255), budget INT, genres varchar(255), plot_keywords varchar(255), aspect_ratio double, facenumber_in_poster INT, director_facebook_likes INT, duration INT, color varchar(255), content_rating varchar(255), actor_1_name varchar(255), actor_1_facebook_likes INT, actor_2_name varchar(255), actor_2_facebook_likes INT, actor_3_name varchar(255), actor_3_facebook_likes INT, cast_total_facebook_likes INT, num_critic_for_reviews INT, num_user_for_reviews INT, num_voted_users INT, movie_facebook_likes INT, imdb_score double, gross INT, move_imdb_link varchar(255));
+
+SET sql_mode = "";
+
+LOAD DATA INFILE '/Users/zhoutongjiang/Documents/GitHub/CS411_Track2_CSV_plus/data/movies.csv' INTO TABLE movies FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\r\n' IGNORE 1 ROWS;
+
+
+CREATE TABLE oscars (Year INT, Ceremony INT, Award varchar(255), Winner INT, Name varchar(255), Film varchar(255));
+
+SET sql_mode = "";
+
+LOAD DATA INFILE '/Users/zhoutongjiang/Documents/GitHub/CS411_Track2_CSV_plus/data/oscars.csv' INTO TABLE movies FIELDS TERMINATED BY ',' ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 ROWS;
+
+*****************************  Q1 *****************************
+
+mysql> SELECT movie_title, title_year, imdb_score FROM movies WHERE director_name = 'Ang Lee' AND imdb_score > 7;
++--------------------------------+------------+------------+
+| movie_title                    | title_year | imdb_score |
++--------------------------------+------------+------------+
+| Life of Pi                     |       2012 |          8 |
+| The Ice Storm                  |       1997 |        7.5 |
+| Sense and Sensibility          |       1995 |        7.7 |
+| Crouching Tiger, Hidden Dragon |       2000 |        7.9 |
++--------------------------------+------------+------------+
+4 rows in set (0.00 sec)
+
+
+****************************** Q2 ***************************
+mysql> SELECT A.Year, A.Film, A.Name FROM oscars A WHERE A.Winner= 1 and A.Award = 'Directing';
++------+--------------------------------+--------------------------------------------------+
+| Year | Film                           | Name                                             |
++------+--------------------------------+--------------------------------------------------+
+| 1928 | The Divine Lady                | Frank Lloyd                                      |
+| 1929 | All Quiet on the Western Front | Lewis Milestone                                  |
+| 1930 | Norman Taurog                  | Skippy                                           |
+| 1931 | Frank Borzage                  | Bad Girl                                         |
+| 1932 | Frank Lloyd                    | Cavalcade                                        |
+| 1934 | Frank Capra                    | It Happened One Night                            |
+| 1935 | John Ford                      | The Informer                                     |
+| 1936 | Frank Capra                    | Mr. Deeds Goes to Town                           |
+| 1937 | Leo McCarey                    | The Awful Truth                                  |
+| 1938 | Frank Capra                    | You Can't Take It with You                       |
+| 1939 | Victor Fleming                 | Gone with the Wind                               |
+| 1940 | John Ford                      | The Grapes of Wrath                              |
+| 1941 | John Ford                      | How Green Was My Valley                          |
+| 1942 | William Wyler                  | Mrs. Miniver                                     |
+| 1943 | Michael Curtiz                 | Casablanca                                       |
+| 1944 | Leo McCarey                    | Going My Way                                     |
+| 1945 | Billy Wilder                   | The Lost Weekend                                 |
+| 1946 | William Wyler                  | The Best Years of Our Lives                      |
+| 1947 | Elia Kazan                     | Gentleman's Agreement                            |
+| 1948 | John Huston                    | The Treasure of the Sierra Madre                 |
+| 1949 | Joseph L. Mankiewicz           | A Letter to Three Wives                          |
+| 1950 | Joseph L. Mankiewicz           | All about Eve                                    |
+| 1951 | George Stevens                 | A Place in the Sun                               |
+| 1952 | John Ford                      | The Quiet Man                                    |
+| 1953 | Fred Zinnemann                 | From Here to Eternity                            |
+| 1954 | Elia Kazan                     | On the Waterfront                                |
+| 1955 | Delbert Mann                   | Marty                                            |
+| 1956 | George Stevens                 | Giant                                            |
+| 1957 | David Lean                     | The Bridge on the River Kwai                     |
+| 1958 | Vincente Minnelli              | Gigi                                             |
+| 1959 | William Wyler                  | Ben-Hur                                          |
+| 1960 | Billy Wilder                   | The Apartment                                    |
+| 1961 | Robert Wise, Jerome Robbins    | West Side Story                                  |
+| 1962 | David Lean                     | Lawrence of Arabia                               |
+| 1963 | Tony Richardson                | Tom Jones                                        |
+| 1964 | George Cukor                   | My Fair Lady                                     |
+| 1965 | Robert Wise                    | The Sound of Music                               |
+| 1966 | Fred Zinnemann                 | A Man for All Seasons                            |
+| 1967 | Mike Nichols                   | The Graduate                                     |
+| 1968 | Carol Reed                     | Oliver!                                          |
+| 1969 | John Schlesinger               | Midnight Cowboy                                  |
+| 1970 | Robert Altman                  | MA*S*H                                           |
+| 1970 | Franklin J. Schaffner          | Patton                                           |
+| 1971 | William Friedkin               | The French Connection                            |
+| 1972 | Bob Fosse                      | Cabaret                                          |
+| 1973 | George Roy Hill                | The Sting                                        |
+| 1974 | Francis Ford Coppola           | The Godfather Part II                            |
+| 1975 | Milos Forman                   | One Flew over the Cuckoo's Nest                  |
+| 1976 | John G. Avildsen               | Rocky                                            |
+| 1977 | Woody Allen                    | Annie Hall                                       |
+| 1978 | Michael Cimino                 | The Deer Hunter                                  |
+| 1979 | Robert Benton                  | Kramer vs. Kramer                                |
+| 1980 | Robert Redford                 | Ordinary People                                  |
+| 1981 | Warren Beatty                  | Reds                                             |
+| 1982 | Richard Attenborough           | Gandhi                                           |
+| 1983 | James L. Brooks                | Terms of Endearment                              |
+| 1984 | Milos Forman                   | Amadeus                                          |
+| 1985 | Sydney Pollack                 | Out of Africa                                    |
+| 1986 | Oliver Stone                   | Platoon                                          |
+| 1987 | Bernardo Bertolucci            | The Last Emperor                                 |
+| 1988 | Barry Levinson                 | Rain Man                                         |
+| 1989 | Oliver Stone                   | Born on the Fourth of July                       |
+| 1990 | Kevin Costner                  | Dances With Wolves                               |
+| 1991 | Jonathan Demme                 | The Silence of the Lambs                         |
+| 1992 | Clint Eastwood                 | Unforgiven                                       |
+| 1993 | Steven Spielberg               | Schindler's List                                 |
+| 1994 | Robert Zemeckis                | Forrest Gump                                     |
+| 1995 | Mel Gibson                     | Braveheart                                       |
+| 1996 | Anthony Minghella              | The English Patient                              |
+| 1997 | James Cameron                  | Titanic                                          |
+| 1998 | Steven Spielberg               | Saving Private Ryan                              |
+| 1999 | Sam Mendes                     | American Beauty                                  |
+| 2000 | Steven Soderbergh              | Traffic                                          |
+| 2001 | Ron Howard                     | A Beautiful Mind                                 |
+| 2002 | Roman Polanski                 | The Pianist                                      |
+| 2003 | Peter Jackson                  | The Lord of the Rings: The Return of the King    |
+| 2004 | Clint Eastwood                 | Million Dollar Baby                              |
+| 2005 | Ang Lee                        | Brokeback Mountain                               |
+| 2006 | Martin Scorsese                | The Departed                                     |
+| 2007 | Joel Coen and Ethan Coen       | No Country for Old Men                           |
+| 2008 | Danny Boyle                    | Slumdog Millionaire                              |
+| 2009 | Kathryn Bigelow                | The Hurt Locker                                  |
+| 2010 | Tom Hooper                     | The King's Speech                                |
+| 2011 | Michel Hazanavicius            | The Artist                                       |
+| 2012 | Ang Lee                        | Life of Pi                                       |
+| 2013 | Alfonso Cuarón                 | Gravity                                          |
+| 2014 | Alejandro G. Iñárritu          | Birdman or (The Unexpected Virtue of Ignorance)  |
+| 2015 | Alejandro G. Iñárritu          | The Revenant                                     |
++------+--------------------------------+--------------------------------------------------+
+88 rows in set (0.00 sec)
+
+
+******************** Q3 *************************
+
+SELECT title_year, movie_title, Award, imdb_score, movie_facebook_likes FROM movies M JOIN oscars A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)
+
+410 rows in set
+
+******************** Q4 *************************
+
+mysql> SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars A1 JOIN oscars A2 ON (A1.Film = A2.Film) WHERE A1.Film <> '' AND A1.Winner = 1 AND A2.Winner=1 AND A1.Award > A2.Award AND A1.Year > 2010;
++------+--------------------+----------------------------+------------+-------------------------+---------------------+
+| Year | Film               | Award                      | Name       | Award                   | Name                |
++------+--------------------+----------------------------+------------+-------------------------+---------------------+
+| 2013 | Dallas Buyers Club | Actor in a Supporting Role | Jared Leto | Actor in a Leading Role | Matthew McConaughey |
++------+--------------------+----------------------------+------------+-------------------------+---------------------+
+
+
+******************** Q5 *************************
+SELECT M1.director_name, M1.title_year, M1.movie_title, M2.title_year, M2.movie_title, M3.title_year, M3.movie_title FROM movies M1 JOIN movies M2 JOIN movies M3 ON (M1.director_name = M2.director_name AND M1.director_name = M3.director_name) WHERE M1.movie_title <> M2.movie_title AND M2.movie_title <> M3.movie_title AND M1.movie_title <> M3.movie_title AND M1.title_year < M2.title_year-15 AND M2.title_year < M3.title_year-15
+
+175 rows in set (3.06 sec)
+
+******************** Q6 *************************
+
+mysql> SELECT M.movie_title, M.title_year, M.imdb_score, A1.Name, A1.Award
+    -> , A2.Name, A2.Award FROM movies M JOIN oscars A1 JOIN oscars A2 ON (M.movie_title = A1.Film AND M.movie_title = A2.Film) WHERE A1.Award = 'Actor' AND A2.Award = 'Actress';
++---------------------------------+------------+------------+------------------+-------+-----------------+---------+
+| movie_title                     | title_year | imdb_score | Name             | Award | Name            | Award   |
++---------------------------------+------------+------------+------------------+-------+-----------------+---------+
+| One Flew Over the Cuckoo's Nest |       1975 |        8.7 | Jack Nicholson   | Actor | Louise Fletcher | Actress |
+| Gone with the Wind              |       1939 |        8.2 | Clark Gable      | Actor | Vivien Leigh    | Actress |
+| Hud                             |       1963 |        7.9 | Paul Newman      | Actor | Patricia Neal   | Actress |
+| The Hustler                     |       1961 |          8 | Paul Newman      | Actor | Piper Laurie    | Actress |
+| Gentleman's Agreement           |       1947 |        7.4 | Gregory Peck     | Actor | Dorothy McGuire | Actress |
+| A Streetcar Named Desire        |       1951 |          8 | Marlon Brando    | Actor | Vivien Leigh    | Actress |
+| From Here to Eternity           |       1953 |        7.8 | Montgomery Clift | Actor | Deborah Kerr    | Actress |
+| From Here to Eternity           |       1953 |        7.8 | Burt Lancaster   | Actor | Deborah Kerr    | Actress |
+| Rebecca                         |       1940 |        8.2 | Laurence Olivier | Actor | Joan Fontaine   | Actress |
++---------------------------------+------------+------------+------------------+-------+-----------------+---------+
+
+
+******************** END *************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 CREATE TABLE test_review5k (funny INT, user_id varchar(1000), review_id varchar(255), text TEXT, business_id varchar(255),stars INT, date varchar(255), useful INT, cool INT);
 
 
@@ -44,4 +231,5 @@ SELECT test_review5k.user_id FROM test_review5k, test_review20 WHERE test_review
 | XylT12exfdLiI_3uDLVIpw |
 | eqWEgMH-DCP74i82BEAZzw |
 +------------------------+
+
 
