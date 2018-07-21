@@ -528,6 +528,21 @@ def AB_AB(AB1, AB2, id):
     output = [[item[0], item[1]] for item in out]
     return output
 
+
+def AB_AB_or(AB1, AB2, id):
+    '''
+
+    '''
+    if id == 0:
+        A = [(item[0], item[1]) for item in AB1]
+        B = [(item[0], item[1]) for item in AB2]
+    if id == 1:
+        A = [(item[0], item[1]) for item in AB1]
+        B = [(item[1], item[0]) for item in AB2]
+    out = or_condition_single([A] + [B])[0]
+    output = [[item[0], item[1]] for item in out]
+    return output
+
 def AB_AC(AB, AC, id1, id2):
     '''
     

@@ -3,6 +3,7 @@ from myCSV import *
 import ntpath
 from join import *
 from select_and_print import ProjectAndPrint
+import time
 
 class Sql_parsing(object):
 
@@ -13,13 +14,14 @@ class Sql_parsing(object):
         self.parsed = sqlparse.parse(sql)
         self.token_list = self.parsed[0].tokens
         self.alias_dic = {}
+        start = time.time()
         csv_list, alias_colume = self.PairCsvandAlias()
         self.indexpath = indexpath
         union = self.Whereparse()
         result = self.getQueryresult(union)
+        query_time = time.time() - start
         ProjectAndPrint(self.sql, result[0],result[1])
-
-
+        print(query_time)
 
     # the function the parse the SELECT part (before FROM) with sql statement as the input.
     # If the SELECT is not *, the outpub is a list of alias (can be None is no alias provided)
@@ -335,53 +337,63 @@ class Sql_parsing(object):
 
     def getJJQuery(self, JJ_cond, table_list):
         join_result =[]
-        for k1, J1 in JJ_cond.items():
-            for k2,J2 in JJ_cond.items():
-                index_J1 = k1
-                index_J2 = k2
-                for m,raw_J1 in enumerate(J1):
-                    for n,raw_J2 in enumerate(J2):
-                        if index_J1[0] == index_J2[0] and index_J1[1] != index_J2[1]:
-                            raw_J12 = AB_AC(raw_J1, raw_J2, 0, 0)
-                            JJ_cond[k1][m] = raw_J12[0]
-                            JJ_cond[k2][n] = raw_J12[1]
-                        elif index_J1[0] != index_J2[0] and index_J1[1] == index_J2[1]:
-                            raw_J12 = AB_AC(raw_J1, raw_J2, 1, 1)
-                            JJ_cond[k1][m] = raw_J12[0]
-                            JJ_cond[k2][n] = raw_J12[1]
-                        elif index_J1[0] == index_J2[1] and index_J1[1] != index_J2[0]:
-                            raw_J12 = AB_AC(raw_J1, raw_J2, 0, 1)
-                            JJ_cond[k1][m] = raw_J12[0]
-                            JJ_cond[k2][n] = raw_J12[1]
-                        elif index_J1[0] != index_J2[1] and index_J1[1] == index_J2[0]:
-                            raw_J12 = AB_AC(raw_J1, raw_J2, 1, 0)
-                            JJ_cond[k1][m] = raw_J12[0]
-                            JJ_cond[k2][n] = raw_J12[1]
-                        elif index_J1[0] == index_J2[1] and index_J1[1] == index_J2[0]:
-                            raw_J12 = AB_AC(raw_J1, raw_J2, 0, 1)
-                            raw_J1_new = raw_J12[0]
-                            raw_J2_new = raw_J12[1]
-                            raw_J12 = AB_AC(raw_J1_new, raw_J2_new, 1, 0)
-                            JJ_cond[k1][m] = raw_J12[0]
-                            JJ_cond[k2][n] = raw_J12[1][n] = raw_J12[1]
-                        elif index_J1[0] == index_J2[0] and index_J1[1] == index_J2[1]:
-                            raw_J12 = AB_AC(raw_J1, raw_J2, 0, 0)
-                            raw_J1_new = raw_J12[0]
-                            raw_J2_new = raw_J12[1]
-                            raw_J12 = AB_AC(raw_J1_new, raw_J2_new, 1, 1)
-                            JJ_cond[k1][m] = raw_J12[0]
-                            JJ_cond[k2][n] = raw_J12[1]
-                        else:
-                            pass
+        key_list = list(JJ_cond.keys())
+        for i in range(len(key_list)):
+            for j in range(i,len(key_list)):
+                index_J1 = key_list[i]
+                index_J2 = key_list[j]
+                k1 = key_list[i]
+                k2 = key_list[j]
+                if k1 == k2:
+                    for m, raw_J1 in enumerate(JJ_cond[k1]):
+                        for n, raw_J2 in enumerate(JJ_cond[k2]):
+                            if m < n:
+                                raw_J12 = AB_AC(raw_J1, raw_J2, 0, 0)
+                                raw_J1_new = raw_J12[0]
+                                raw_J2_new = raw_J12[1]
+                                raw_J12 = AB_AC(raw_J1_new, raw_J2_new, 1, 1)
+                                JJ_cond[k1][m] = raw_J12[0]
+                                JJ_cond[k2][n] = raw_J12[1]
+                            else:
+                                pass
+                else:
+                    for m, raw_J1 in enumerate(JJ_cond[k1]):
+                        for n, raw_J2 in enumerate(JJ_cond[k2]):
+                            if index_J1[0] == index_J2[0] and index_J1[1] != index_J2[1]:
+                                raw_J12 = AB_AC(raw_J1, raw_J2, 0, 0)
+                                JJ_cond[k1][m] = raw_J12[0]
+                                JJ_cond[k2][n] = raw_J12[1]
+                            elif index_J1[0] != index_J2[0] and index_J1[1] == index_J2[1]:
+                                raw_J12 = AB_AC(raw_J1, raw_J2, 1, 1)
+                                JJ_cond[k1][m] = raw_J12[0]
+                                JJ_cond[k2][n] = raw_J12[1]
+                            elif index_J1[0] == index_J2[1] and index_J1[1] != index_J2[0]:
+                                raw_J12 = AB_AC(raw_J1, raw_J2, 0, 1)
+                                JJ_cond[k1][m] = raw_J12[0]
+                                JJ_cond[k2][n] = raw_J12[1]
+                            elif index_J1[0] != index_J2[1] and index_J1[1] == index_J2[0]:
+                                raw_J12 = AB_AC(raw_J1, raw_J2, 1, 0)
+                                JJ_cond[k1][m] = raw_J12[0]
+                                JJ_cond[k2][n] = raw_J12[1]
+                            elif index_J1[0] == index_J2[1] and index_J1[1] == index_J2[0]:
+                                raw_J12 = AB_AC(raw_J1, raw_J2, 0, 1)
+                                raw_J1_new = raw_J12[0]
+                                raw_J2_new = raw_J12[1]
+                                raw_J12 = AB_AC(raw_J1_new, raw_J2_new, 1, 0)
+                                JJ_cond[k1][m] = raw_J12[0]
+                                JJ_cond[k2][n] = raw_J12[1]
+                            else:
+                                pass
         for k, v in JJ_cond.items():
             if len(v) > 1:
                 while len(JJ_cond[k]) > 1:
                     raw_J1 = JJ_cond[k].pop()
                     raw_J2 = JJ_cond[k].pop()
-                    raw_J12 = AB_AB(raw_J1, raw_J2, 0)
-                    v.append([raw_J12, k])
+                    raw_J12 = AB_AB(cross_prod(raw_J1), cross_prod(raw_J2), 0)
+                    JJ_cond[k].append(raw_J12)
             elif len(v) > 0:
-                pass
+                raw_J1 = JJ_cond[k].pop()
+                JJ_cond[k].append(cross_prod(raw_J1))
             else:
                 pass
         for a in table_list:
@@ -390,72 +402,40 @@ class Sql_parsing(object):
                     raw_J1 = JJ_cond[(a, b)].pop()
                     raw_J2 = JJ_cond[(b, a)].pop()
                     raw_J12 = AB_AB(raw_J1, raw_J2, 1)
-                    JJ_cond[(a,b)].append([raw_J12, (a,b)])
+                    JJ_cond[(a,b)].append(raw_J12)
                     del JJ_cond[(b,a)]
         for k, v in JJ_cond.items():
             if len(v) > 0:
                 join_result.append([v[0],list(k)])
-        if len(join_result) == 1:
-            return join_result
-        else:
-            for i in range(len(JJ_cond)-1):
-                for j in range(i + 1, len(JJ_cond)):
-                    J1 = join_result[i]
-                    J2 = join_result[j]
-                    raw_J1 = J1[0]
-                    index_J1 = J1[1]
-                    raw_J2 = J2[0]
-                    index_J2 = J2[1]
-                    if index_J1[0] == index_J2[0] and index_J1[1] != index_J2[1]:
-                        raw_J12 = AB_AC(raw_J1, raw_J2, 0, 0)
-                        join_result[i] = [raw_J12[0],index_J1]
-                        join_result[j] = [raw_J12[1], index_J2]
-                    elif index_J1[0] != index_J2[0] and index_J1[1] == index_J2[1]:
-                        raw_J12 = AB_AC(raw_J1, raw_J2, 1, 1)
-                        join_result[i] = [raw_J12[0], index_J1]
-                        join_result[j] = [raw_J12[1], index_J2]
-                    elif index_J1[0] == index_J2[1] and index_J1[1] != index_J2[0]:
-                        raw_J12 = AB_AC(raw_J1, raw_J2, 0, 1)
-                        join_result[i] = [raw_J12[0], index_J1]
-                        join_result[j] = [raw_J12[1], index_J2]
-                    elif index_J1[0] != index_J2[1] and index_J1[1] == index_J2[0]:
-                        raw_J12 = AB_AC(raw_J1, raw_J2, 1, 0)
-                        join_result[i] = [raw_J12[0], index_J1]
-                        join_result[j] = [raw_J12[1], index_J2]
-                    else:
-                        pass
-            return join_result
+        return join_result
 
 
     def getFinalJoinResults(self,join_result):
-        CP_join = []
-        for j in join_result:
-            CP_join.append([cross_prod(j[0]),j[1]])
-        o1 = CP_join.pop()
-        if len(join_result) == 1:
-            return [permute_list(o1[0]), o1[1]]
+        o1 = join_result.pop()
+        if len(join_result) == 0:
+            return [o1[0], o1[1]]
         else:
-            o2 = CP_join.pop()
+            o2 = join_result.pop()
             raw_o1 = o1[0]
             index_o1 = o1[1]
             raw_o2 = o2[0]
             index_o2 = o2[1]
             if index_o1[0] == index_o2[0] and index_o1[1] != index_o2[1]:
                 raw_o12 = and_condition_double(raw_o1, raw_o2, 0, 0)
-                new_index = index_o1.append(index_o2[1])
-                return [permute_list(raw_o12),new_index]
+                index_o1.append(index_o2[1])
+                return [raw_o12,index_o1]
             elif index_o1[0] != index_o2[0] and index_o1[1] == index_o2[1]:
                 raw_o12 = and_condition_double(raw_o1, raw_o2, 1, 1)
-                new_index = index_o1.append(index_o2[0])
-                return [permute_list(raw_o12), new_index]
+                index_o1.append(index_o2[0])
+                return [raw_o12, index_o1]
             elif index_o1[0] == index_o2[1] and index_o1[1] != index_o2[0]:
                 raw_o12 = and_condition_double(raw_o1, raw_o2, 0, 1)
-                new_index = index_o1.append(index_o2[0])
-                return [permute_list(raw_o12), new_index]
+                index_o1.append(index_o2[0])
+                return [raw_o12, index_o1]
             elif index_o1[0] != index_o2[1] and index_o1[1] == index_o2[0]:
                 raw_o12 = and_condition_double(raw_o1, raw_o2, 1, 0)
-                new_index = index_o1.append(index_o2[1])
-                return [permute_list(raw_o12), new_index]
+                index_o1.append(index_o2[1])
+                return [raw_o12, index_o1]
             else:
                 return None
 
@@ -478,9 +458,13 @@ class Sql_parsing(object):
                     raw_result = self.getJoinQuery(raw_join, single_result)
                     JJ_cond[raw_result[1]].append(raw_result[0])
                 join_result = self.getJJQuery(JJ_cond,table_list)
-                Final_result = self.getFinalJoinResults(join_result)
-            #     and_sum = and_sum + final_join_result
-            # Final_result = or_condition_single(and_sum)
+                final_join_result = self.getFinalJoinResults(join_result)
+                if len(and_sum) == 0:
+                    and_sum = final_join_result[0]
+                    and_sum_ind = final_join_result[1]
+                else:
+                    and_sum = AB_AB_or(and_sum, final_join_result[0], 0)
+            Final_result = [permute_list(and_sum), and_sum_ind]
         else:
             for andC in union:
                 table_list, single_cond_dic, join_cond = self.Classify_conditions(andC)

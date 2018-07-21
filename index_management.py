@@ -181,24 +181,24 @@ def buildDictForAttr(filePath, attrIndx, isNumber):
             row_ID += 1
         return dict_attr
 
-
-def main():
-    #a small unit test to check the functionality of index/btree creation
-    fileName = 'oscars.csv'
-    dataFilePath = './data/' + fileName
-    filepathBtree = './btree/'
-    attID = 3
-    # build btrees for all attributes
-    # buildTreeForAllAttr(fileName, dataFilePath, filepathBtree)
-    btt = buildTreeForSingleAttr(fileName, dataFilePath, filepathBtree, AttrId = attID, return_tree = True, isNumber = True)
-    # btt = buildTreeForMixedAttr(fileName, dataFilePath, filepathBtree, attrIndxSet = [0,5], Operator = "+", return_tree = True)
-
-
-    # print(list(btt.keys()))
-    #recover btree from btreeFile
-    btreeFile = 'oscars_Attr_3_.tree'
-    btree = recoverFromPickle(btreeFile, filepathBtree)
-    print(list(btree.keys()))
+#
+# def main():
+#     #a small unit test to check the functionality of index/btree creation
+#     fileName = 'oscars.csv'
+#     dataFilePath = './data/' + fileName
+#     filepathBtree = './btree/'
+#     attID = 3
+#     # build btrees for all attributes
+#     # buildTreeForAllAttr(fileName, dataFilePath, filepathBtree)
+#     btt = buildTreeForSingleAttr(fileName, dataFilePath, filepathBtree, AttrId = attID, return_tree = True, isNumber = True)
+#     # btt = buildTreeForMixedAttr(fileName, dataFilePath, filepathBtree, attrIndxSet = [0,5], Operator = "+", return_tree = True)
+#
+#
+#     # print(list(btt.keys()))
+#     #recover btree from btreeFile
+#     btreeFile = 'oscars_Attr_3_.tree'
+#     btree = recoverFromPickle(btreeFile, filepathBtree)
+#     print(list(btree.keys()))
     # print(list(btree.keys()))
     # print(list(btree.values('2')));
     # for k, it in btree.iteritems():
@@ -208,33 +208,33 @@ def main():
     # print()
 
 
-start = time.time()
+# start = time.time()
 # main()
 
 
-fileName1 = 'movies.csv'
-dataFilePath1 = './data/' + fileName1
-filepathBtree = './btree/'
-
-
-#Testcase 1
-ID = getAttrID(dataFilePath1, 'director_name')
-btree1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
-list1 = single_join_filter_one(btree1,'=','ANG LEE')
-
-ID = getAttrID(dataFilePath1, 'imdb_score')
-btree2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
-list2 = single_join_filter_one(btree2,'>',7)
-
-list_1 = list1 + list2
-out = and_condition_single(list_1)
-
-# Testcase 2
-fileName2 = 'oscars.csv'
-dataFilePath2 = './data/' + fileName2
-ID = getAttrID(dataFilePath2, 'Winner')
-btree3 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
-list3 = single_join_filter_one(btree3,'=',1)
+# fileName1 = 'movies.csv'
+# dataFilePath1 = './data/' + fileName1
+# filepathBtree = './btree/'
+#
+#
+# #Testcase 1
+# ID = getAttrID(dataFilePath1, 'director_name')
+# btree1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
+# list1 = single_join_filter_one(btree1,'=','ANG LEE')
+#
+# ID = getAttrID(dataFilePath1, 'imdb_score')
+# btree2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
+# list2 = single_join_filter_one(btree2,'>',7)
+#
+# list_1 = list1 + list2
+# out = and_condition_single(list_1)
+#
+# # Testcase 2
+# fileName2 = 'oscars.csv'
+# dataFilePath2 = './data/' + fileName2
+# ID = getAttrID(dataFilePath2, 'Winner')
+# btree3 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
+# list3 = single_join_filter_one(btree3,'=',1)
 
 #ID = getAttrID(dataFilePath2, 'Award')
 #btree4 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
@@ -420,10 +420,10 @@ list3 = single_join_filter_one(btree3,'=',1)
 
 
 #4
-alias_index_result = ['A1','A2']
-rowindice_result_from_selection = out
-sql_statement = "SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars.csv A1 JOIN oscars.csv A2 ON (A1.Film = A2.Film) WHERE A1.Film <> '' AND A1.Winner = 1 AND A2.Winner=1 AND A1.Award > A2.Award AND A1.Year > 2010"
-ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+# alias_index_result = ['A1','A2']
+# rowindice_result_from_selection = out
+# sql_statement = "SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars.csv A1 JOIN oscars.csv A2 ON (A1.Film = A2.Film) WHERE A1.Film <> '' AND A1.Winner = 1 AND A2.Winner=1 AND A1.Award > A2.Award AND A1.Year > 2010"
+# ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
 
 
 #6
