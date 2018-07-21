@@ -140,7 +140,6 @@ def MatchIndicewithAliasAttribute(sql, rowindice_result_from_selection, alias_in
 		print("no selection result matched the conditions or error: the row indice list after selection is incorrect")
 	else:
 		for i, csaname in enumerate(p_alias_names):
-			print(csaname)
 			i_in_f = alias_index_from_result.index(csaname)
 			matched_rowindice_lists.append(rowindice_result_from_selection[i_in_f])
 	if matched_rowindice_lists == []:

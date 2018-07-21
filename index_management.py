@@ -216,19 +216,18 @@ fileName1 = 'movies.csv'
 dataFilePath1 = './data/' + fileName1
 filepathBtree = './btree/'
 
-#build btrees for all attributes
-#buildTreeForAllAttr(fileName1, dataFilePath, filepathBtree)
+
 #Testcase 1
-#ID = getAttrID(dataFilePath1, 'director_name')
-#btree1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
-#list1 = single_join_filter_one(btree1,'=','ANG LEE')
-#
-#ID = getAttrID(dataFilePath1, 'imdb_score')
-#btree2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
-#list2 = single_join_filter_one(btree2,'>',7)
-#
-#list_1 = list1 + list2
-#out = and_condition_single(list_1)
+ID = getAttrID(dataFilePath1, 'director_name')
+btree1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
+list1 = single_join_filter_one(btree1,'=','ANG LEE')
+
+ID = getAttrID(dataFilePath1, 'imdb_score')
+btree2 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
+list2 = single_join_filter_one(btree2,'>',7)
+
+list_1 = list1 + list2
+out = and_condition_single(list_1)
 
 # Testcase 2
 fileName2 = 'oscars.csv'
@@ -249,28 +248,28 @@ list3 = single_join_filter_one(btree3,'=',1)
 # Testcase 3
 # SELECT title_year, movie_title, Award, imdb_score, movie_facebook_likes FROM movies M JOIN oscars A ON (M.movie_title = A.Film) 
 # WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)
-start = time.time()
-ID1 = getAttrID(dataFilePath1, 'movie_title')
-btree5 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
-ID2 = getAttrID(dataFilePath2, 'Film')
-btree6 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID2, return_tree = True, isNumber = False)
-list5 = double_join_filter(btree5,btree6,'=')
-
-ID1 = getAttrID(dataFilePath1, 'imdb_score')
-btree5 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = True)
-list7 = single_join_filter_one(btree5,'<',6)
-
-ID2 = getAttrID(dataFilePath1, 'movie_facebook_likes')
-btree6 = buildTreeForSingleAttr(fileName2, dataFilePath1, filepathBtree, AttrId = ID2, return_tree = True, isNumber = True)
-list8 = single_join_filter_one(btree6,'<',10000)
-
-temp1 = list3
-temp2 = or_condition_single(list7+list8)
-temp12 = list5
-out1 = A_AB_B_and(temp2,temp12,temp1)
-out2 = cross_prod(out1)
-out = permute_list(out2)
-print(time.time() - start)
+#start = time.time()
+#ID1 = getAttrID(dataFilePath1, 'movie_title')
+#btree5 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
+#ID2 = getAttrID(dataFilePath2, 'Film')
+#btree6 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID2, return_tree = True, isNumber = False)
+#list5 = double_join_filter(btree5,btree6,'=')
+#
+#ID1 = getAttrID(dataFilePath1, 'imdb_score')
+#btree5 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = True)
+#list7 = single_join_filter_one(btree5,'<',6)
+#
+#ID2 = getAttrID(dataFilePath1, 'movie_facebook_likes')
+#btree6 = buildTreeForSingleAttr(fileName2, dataFilePath1, filepathBtree, AttrId = ID2, return_tree = True, isNumber = True)
+#list8 = single_join_filter_one(btree6,'<',10000)
+#
+#temp1 = list3
+#temp2 = or_condition_single(list7+list8)
+#temp12 = list5
+#out1 = A_AB_B_and(temp2,temp12,temp1)
+#out2 = cross_prod(out1)
+#out = permute_list(out2)
+#print(time.time() - start)
 
 # Testcase 4
 # SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars A1 JOIN oscars A2 ON (A1.Film = A2.Film) 
@@ -302,7 +301,8 @@ print(time.time() - start)
 #temp2 = list_5_4
 #temp11 = A_AB_B_and(temp1,list_5_5,temp2) # BA
 #temp12 = A_AB_B_and(temp1,list_5_1,temp2) # AB
-##[temp11,temp12] = 
+#[temp12,temp11] = AB_AC(temp12,temp11,0,1)
+#[temp12,temp11] = AB_AC(temp12,temp11,1,0) 
 #temp21 = cross_prod(temp11) # BA
 #temp22 = cross_prod(temp12) # AB
 #
@@ -400,9 +400,9 @@ print(time.time() - start)
 
 #==================================================================================================================================#
 #1
-#alias_index_result = [None]
+#alias_index_result = ['M']
 #rowindice_result_from_selection = out
-#sql_statement = "SELECT movie_title, title_year, imdb_score FROM movies.csv WHERE director_name = 'Ang Lee' AND imdb_score > 7"
+#sql_statement = "SELECT M.movie_title, M.title_year, M.imdb_score FROM movies.csv M WHERE M.director_name = 'Ang Lee' AND imdb_score > 7"
 #ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
 
 #2
@@ -413,17 +413,17 @@ print(time.time() - start)
 
 
 #3
-alias_index_result = ['M','A']
-rowindice_result_from_selection = out
-sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
-ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+#alias_index_result = ['M','A']
+#rowindice_result_from_selection = out
+#sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
+#ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
 
 
 #4
-#alias_index_result = ['A1','A2']
-#rowindice_result_from_selection = out
-#sql_statement = "SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars.csv A1 JOIN oscars.csv A2 ON (A1.Film = A2.Film) WHERE A1.Film <> '' AND A1.Winner = 1 AND A2.Winner=1 AND A1.Award > A2.Award AND A1.Year > 2010"
-#ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+alias_index_result = ['A1','A2']
+rowindice_result_from_selection = out
+sql_statement = "SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars.csv A1 JOIN oscars.csv A2 ON (A1.Film = A2.Film) WHERE A1.Film <> '' AND A1.Winner = 1 AND A2.Winner=1 AND A1.Award > A2.Award AND A1.Year > 2010"
+ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
 
 
 #6
