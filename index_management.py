@@ -3,6 +3,7 @@ from myCSV import *
 from mybtree import *
 # import gzip
 import time
+from select_and_print import *
 
 import operator
 
@@ -215,9 +216,9 @@ fileName1 = 'movies.csv'
 dataFilePath1 = './data/' + fileName1
 filepathBtree = './btree/'
 
-# build btrees for all attributes
-# buildTreeForAllAttr(fileName1, dataFilePath, filepathBtree)
-# Testcase 1
+#build btrees for all attributes
+#buildTreeForAllAttr(fileName1, dataFilePath, filepathBtree)
+#Testcase 1
 #ID = getAttrID(dataFilePath1, 'director_name')
 #btree1 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
 #list1 = single_join_filter_one(btree1,'=','ANG LEE')
@@ -227,7 +228,7 @@ filepathBtree = './btree/'
 #list2 = single_join_filter_one(btree2,'>',7)
 #
 #list_1 = list1 + list2
-#rows_1 = and_condition_single(list_1)
+#out = and_condition_single(list_1)
 
 # Testcase 2
 fileName2 = 'oscars.csv'
@@ -235,17 +236,19 @@ dataFilePath2 = './data/' + fileName2
 ID = getAttrID(dataFilePath2, 'Winner')
 btree3 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID, return_tree = True, isNumber = True)
 list3 = single_join_filter_one(btree3,'=',1)
-#
+
 #ID = getAttrID(dataFilePath2, 'Award')
 #btree4 = buildTreeForSingleAttr(fileName2, dataFilePath2, filepathBtree, AttrId = ID, return_tree = True, isNumber = False)
+#start = time.time()
 #list4 = single_join_filter_one(btree4,'=','DIRECTING')
 #
 #list_2 = list3 + list4
-#rows_2 = and_condition_single(list_2)
+#out = and_condition_single(list_2)
+#print(time.time() - start)
 #
-## Testcase 3
-## SELECT title_year, movie_title, Award, imdb_score, movie_facebook_likes FROM movies M JOIN oscars A ON (M.movie_title = A.Film) 
-## WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)
+# Testcase 3
+# SELECT title_year, movie_title, Award, imdb_score, movie_facebook_likes FROM movies M JOIN oscars A ON (M.movie_title = A.Film) 
+# WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)
 start = time.time()
 ID1 = getAttrID(dataFilePath1, 'movie_title')
 btree5 = buildTreeForSingleAttr(fileName1, dataFilePath1, filepathBtree, AttrId = ID1, return_tree = True, isNumber = False)
@@ -266,7 +269,7 @@ temp2 = or_condition_single(list7+list8)
 temp12 = list5
 out1 = A_AB_B_and(temp2,temp12,temp1)
 out2 = cross_prod(out1)
-out3 = permute_list(out2)
+out = permute_list(out2)
 print(time.time() - start)
 
 # Testcase 4
@@ -300,21 +303,12 @@ print(time.time() - start)
 #temp11 = A_AB_B_and(temp1,list_5_5,temp2) # BA
 #temp12 = A_AB_B_and(temp1,list_5_1,temp2) # AB
 ##[temp11,temp12] = 
-##temp21 = cross_prod(temp11) # BA
-##temp22 = cross_prod(temp12) # AB
+#temp21 = cross_prod(temp11) # BA
+#temp22 = cross_prod(temp12) # AB
 #
 #out1 = AB_AB(temp22, temp21, 0) 
-#out2 = permute_list(out1)
+#out = permute_list(out1)
 #
-#
-#
-##temp1 = single_to_double(and_condition_single(list_5_6+list_5_2+list_5_3))
-##temp2 = single_to_double(list_5_4)
-##temp12 = list_5_1
-##out1 = and_condition_double(temp1,temp12,0,0) #12
-##out2 = and_condition_double(temp2,out1,0,1)   #21
-##out3 = and_condition_double(temp2,temp12,0,1) #21
-##out4 = and_condition_double(temp1,out3,0,1)   #12
 #print(time.time() - start)
 
 
@@ -385,48 +379,99 @@ print(time.time() - start)
 #M_A2 = double_join_filter(btree_mt,btree_f2,'=') # M_A2
 #
 #start = time.time()
-##dout2 = single_to_double(sout0) # A1
-##dout3 = single_to_double(sout1) # A2
-#out1 = A_AB_and(A1, M_A1, 1) #M_A1
-#out2 = A_AB_and(A2, M_A2, 1) #M_A2
+#out1 = A_AB_and(A1, M_A1, 1) # M_A1
+#out2 = A_AB_and(A2, M_A2, 1) # M_A2
 #[out1,out2] = AB_AC(out1,out2,0,1)
 #out3 = cross_prod(out1)
 #out4 = cross_prod(out2)
 #
-#out5 = and_condition_double(out3,out4,0,0) #M_A1_A2
-#out6 = permute_list(out5)
+#out5 = and_condition_double(out3,out4,0,0) # M_A1_A2
+#out = permute_list(out5)
 #print(time.time() - start)
-#A1_M = and_condition_double(dout2,dout0,0,1)
-#A2_M = and_condition_double(dout3,dout1,0,1)
-#M_A1_A2 = and_condition_double(A1_M,A2_M,1,1)
-#out4 = permute_list(M_A1_A2)
 
-'''
-#recover btree from btreeFile
-btreeFile1 = 'review-5k_Attr_1_.tree'
-btree1 = recoverFromPickle(btreeFile1, filepathBtree)
 
-fileName2 = 'review-20.csv'
-dataFilePath = './data/' + fileName2
-filepathBtree = './btree/'
 
-# build btrees for all attributes
-buildTreeForAllAttr(fileName2, dataFilePath, filepathBtree)
-# btree1 = buildTreeForSingleAttr(fileName1, dataFilePath, filepathBtree, AttrId = 0, return_tree = True)
 
-#recover btree from btreeFile
-btreeFile2 = 'review-20_Attr_1_.tree'
-btree2 = recoverFromPickle(btreeFile2, filepathBtree)
 
-a1 = double_join_filter(btree1, btree2, '=')
 
-btreeFile3 = 'review-20_Attr_5_.tree'
-btree3 = recoverFromPickle(btreeFile3, filepathBtree)
 
-btreeFile4 = 'review-5k_Attr_5_.tree'
-btree4 = recoverFromPickle(btreeFile4, filepathBtree)
-a2 = single_join_filter_one(btree3,'<',4)
 
-a3 = list(btree3.values(min = btree3.minKey(), max = 4, excludemax=True))
-print('time = ', time.time() - start)
-'''
+
+
+#==================================================================================================================================#
+#1
+#alias_index_result = [None]
+#rowindice_result_from_selection = out
+#sql_statement = "SELECT movie_title, title_year, imdb_score FROM movies.csv WHERE director_name = 'Ang Lee' AND imdb_score > 7"
+#ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+
+#2
+#alias_index_result = ['A']
+#rowindice_result_from_selection = out
+#sql_statement = "SELECT A.Year, A.Film, A.Name FROM oscars.csv A WHERE A.Winner= 1 and A.Award = 'Directing'"
+#ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+
+
+#3
+alias_index_result = ['M','A']
+rowindice_result_from_selection = out
+sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
+ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+
+
+#4
+#alias_index_result = ['A1','A2']
+#rowindice_result_from_selection = out
+#sql_statement = "SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars.csv A1 JOIN oscars.csv A2 ON (A1.Film = A2.Film) WHERE A1.Film <> '' AND A1.Winner = 1 AND A2.Winner=1 AND A1.Award > A2.Award AND A1.Year > 2010"
+#ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+
+
+#6
+#alias_index_result = ['M','A1','A2']
+#rowindice_result_from_selection = out
+#sql_statement = "SELECT M.movie_title, M.title_year, M.imdb_score, A1.Name, A1.Award, A2.Name, A2.Award FROM movies.csv M JOIN oscars.csv A1 JOIN oscars.csv A2 ON (M.movie_title = A1.Film AND M.movie_title = A2.Film) WHERE A1.Award = 'Actor' AND A2.Award = 'Actress'"
+#ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

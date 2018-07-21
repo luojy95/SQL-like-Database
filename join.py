@@ -587,11 +587,7 @@ list_row = [[item[0], item[1]] for item in list_row]
     
 #double_join_filter(btree_a2,btree_a1,'<')        
 '''
-a = [[[1, 2], [3, 4, 5]], [[1, 2, 4], [3, 5, 4]]]
-temp1 = []
-for i in range(len(a)):
-    temp1 = [[a[i][1]] + [a[i][0]]] + temp1
-temp2 = temp1 + a
+
 
 
 

@@ -6,10 +6,15 @@ from prettytable import PrettyTable
 
 def Main():
 
-	sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
+	#sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
+	#sql_statement = "SELECT movie_title, title_year, imdb_score FROM movies.csv WHERE director_name = 'Ang Lee' AND imdb_score > 7"
+	sql_statement = "SELECT A.Year, A.Film, A.Name FROM oscars.csv A WHERE A.Winner= 1 and A.Award = 'Directing'"
+	#alias_index_result = ['A', 'M']
+	alias_index_result = ['A']
 
-	alias_index_result = ['A', 'M']
-	rowindice_result_from_selection = [[3928,3928,1894,783], [18,22,30,32]]
+	#rowindice_result_from_selection = [[3928,3928,1894,783], [18,22,30,32]]
+	#rowindice_result_from_selection = [[224, 2336, 2243, 2406]]
+	rowindice_result_from_selection = [[2564, 7172, 5129, 8202, 9749]]
 	ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
 
 
@@ -24,10 +29,12 @@ def ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_
 	pro_csv_names, pro_alias_names, pro_attribute_names = ProjectCsvandAlias(sql_statement)
 	fin_attributes, fin_result = FindValueinMultipleCsv(pro_csv_names, matched_rowindice_lists, pro_attribute_names)
 	print("---------------------the result of query is as followed:-----------------------")
-	pr = PrettyTable(fin_attributes)
-	for i, row in enumerate(fin_result):
-		pr.add_row(row)
-	print(pr)
+	print(fin_attributes)
+	printlist(fin_result)
+#	pr = PrettyTable(fin_attributes)
+#	for i, row in enumerate(fin_result):
+#		pr.add_row(row)
+#	print(pr)
 
 
 # the function to print the final table line by line, list_name is the statement representing the final table
@@ -133,6 +140,7 @@ def MatchIndicewithAliasAttribute(sql, rowindice_result_from_selection, alias_in
 		print("no selection result matched the conditions or error: the row indice list after selection is incorrect")
 	else:
 		for i, csaname in enumerate(p_alias_names):
+			print(csaname)
 			i_in_f = alias_index_from_result.index(csaname)
 			matched_rowindice_lists.append(rowindice_result_from_selection[i_in_f])
 	if matched_rowindice_lists == []:
@@ -145,7 +153,7 @@ def all_same(items):
 
 # This function take one open csv file, a list of row_indice for one csv, a list of attribute (in the SELECT part) as input and return the attribute name and value result in the tuple form. Note that this function service the FindValueinMultipleCsv() function as this function only accepted single filename and single row_indice list for one csv.
 def Findvalueincsv(filename, row_indice, volume_value_list):
-	name = filename
+	name = './data/' + filename
 	with open(name, 'r', encoding="utf8") as filename_open:
 		f = csv.reader(filename_open)
 		filename_open.seek(0)
@@ -176,8 +184,8 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 					for insame in indice_samevalue:
 						value_result[insame] = tuple(attribute_tuple)
 					attribute_tuple = []
-			if k == row_indice[len(row_indice)-1]:
-				break
+#			if k == row_indice[len(row_indice)-1]:
+#				break
 
 		if volume_index == [] or value_result == []:
 			print("error: cannot find attribute in csv with referenced name or with the row indice")
