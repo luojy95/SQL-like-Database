@@ -1,8 +1,6 @@
 import sqlparse
 import csv
 import time
-from prettytable import PrettyTable
-
 
 def Main():
 

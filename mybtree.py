@@ -46,3 +46,18 @@ def recoverFromPickle(BtreefileName, file_path):
     # with gzip.open(file_path + BtreefileName, 'rb') as f:
     #     btree = ubjson.load(f)
     #     return btree
+
+def recoverFromPickle2(Btreefilepath):
+    """
+    This funciton accepts a BtreefileName stored in the file_path and return a btree object
+    Args:
+        Btreefilepath: path to '.tree' file that store the btree file
+    Returns:
+        btree: object that use attribute value as key, row index set as value
+    """
+    with open(Btreefilepath, 'rb') as f:
+        btree = cPickle.load(f, encoding='bytes')
+        return btree
+    # with gzip.open(file_path + BtreefileName, 'rb') as f:
+    #     btree = ubjson.load(f)
+    #     return btree

@@ -3,6 +3,7 @@ import sys
 from myCSV import *
 from index_management import buildTreeForSingleAttr
 import ntpath
+from SQLparse import Sql_parsing
 
 
 def main():
@@ -50,18 +51,18 @@ def main():
             Attribs= ind.split(" ")
             filepath = Attribs[0]
             filename = ntpath.basename(filepath)
-            for i in range(len(Attribs)):
-                if i > 0:
-                    AttrId = getAttrID(filepath, Attribs[i])
-                    if AttrId < 0:
-                        print("Fail to build index")
-                    else:
-                        buildTreeForSingleAttr(filename, filepath, options.indexpath, AttrId, return_tree = False)
-                        print("Index for " + Attribs[i] + " build successfully")
+            AttrId = getAttrID(filepath, Attribs[1])
+            if AttrId < 0:
+                print("Fail to build index")
+            else:
+                if Attribs[2] == 'y':
+                    buildTreeForSingleAttr(filename, filepath, options.indexpath, AttrId, return_tree=False, isNumber=True)
+                else:
+                    buildTreeForSingleAttr(filename, filepath, options.indexpath, AttrId, return_tree=False, isNumber=False)
+                print("Index for " + Attribs[1] + " build successfully")
         elif selection == 2:
             sql = input("Input SQL Command:\n")
-
-            print("Running Query " + sql)
+            S = Sql_parsing(sql, options.indexpath)
         elif selection == 3:
             print("Exit!")
             break
