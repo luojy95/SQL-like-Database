@@ -6,10 +6,15 @@ from prettytable import PrettyTable
 
 def Main():
 
-	sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
+	#sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
+	#sql_statement = "SELECT movie_title, title_year, imdb_score FROM movies.csv WHERE director_name = 'Ang Lee' AND imdb_score > 7"
+	sql_statement = "SELECT A.Year, A.Film, A.Name FROM oscars.csv A WHERE A.Winner= 1 and A.Award = 'Directing'"
+	#alias_index_result = ['A', 'M']
+	alias_index_result = ['A']
 
-	alias_index_result = ['A', 'M']
-	rowindice_result_from_selection = [[3928,3928,1894,783], [18,22,30,32]]
+	#rowindice_result_from_selection = [[3928,3928,1894,783], [18,22,30,32]]
+	#rowindice_result_from_selection = [[224, 2336, 2243, 2406]]
+	rowindice_result_from_selection = [[2564, 7172, 5129, 8202, 9749]]
 	ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
 
 
