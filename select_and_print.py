@@ -2,17 +2,25 @@ import sqlparse
 import csv
 import time
 
+
+
 def Main():
 
 	#sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
 	#sql_statement = "SELECT movie_title, title_year, imdb_score FROM movies.csv WHERE director_name = 'Ang Lee' AND imdb_score > 7"
-	sql_statement = "SELECT A.Year, A.Film, A.Name FROM oscars.csv A WHERE A.Winner= 1 and A.Award = 'Directing'"
+	#sql_statement = "SELECT A1.Year, A1.Film, A1.Award, A1.Name, A2.Award, A2.Name FROM oscars.csv A1 JOIN oscars.csv A2 ON (A1.Film = A2.Film) WHERE A1.Film <> '' AND A1.Winner = 1 AND A2.Winner=1 AND A1.Award > A2.Award AND A1.Year > 2010;"
+	#sql_statement = "SELECT M.movie_title, M.title_year, M.imdb_score, A1.Name, A1.Award, A2.Name, A2.Award FROM movies.csv M JOIN oscars.csv A1 JOIN oscars.csv A2 ON (M.movie_title = A1.Film AND M.movie_title = A2.Film) WHERE A1.Award = 'Actor' AND A2.Award = 'Actress';"
 	#alias_index_result = ['A', 'M']
-	alias_index_result = ['A']
+	#alias_index_result = ['M', 'A1', 'A2']
 
 	#rowindice_result_from_selection = [[3928,3928,1894,783], [18,22,30,32]]
 	#rowindice_result_from_selection = [[224, 2336, 2243, 2406]]
-	rowindice_result_from_selection = [[2564, 7172, 5129, 8202, 9749]]
+	#rowindice_result_from_selection = [[2564, 7172, 5129, 8202, 9749]]
+	#rowindice_result_from_selection =[[9590], [9595]]
+	#rowindice_result_from_selection =[[3959, 3989, 3989, 3870, 3671, 3787, 3568, 4075, 3862], [2512, 2760, 2762, 2075, 787, 3961, 5301, 932, 3717], [2522, 2771, 2771, 2085, 800, 3970, 5312, 940, 3727]]
+	sql_statement = "SELECT M.movie_title FROM movies.cscv M"
+	alias_index_result = ['M']
+	rowindice_result_from_selection =[[3787, 3568, 4075, 5862]]
 	ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
 
 
@@ -29,10 +37,10 @@ def ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_
 	print("---------------------the result of query is as followed:-----------------------")
 	print(fin_attributes)
 	printlist(fin_result)
-#	pr = PrettyTable(fin_attributes)
-#	for i, row in enumerate(fin_result):
-#		pr.add_row(row)
-#	print(pr)
+	# pr = PrettyTable(fin_attributes)
+	# for i, row in enumerate(fin_result):
+	# 	pr.add_row(row)
+	# print(pr)
 
 
 # the function to print the final table line by line, list_name is the statement representing the final table
@@ -84,7 +92,7 @@ def PairCsvandAlias(sql):
 		if isinstance(tok, sqlparse.sql.Token) and tok.value.upper() == 'FROM':
 			index_from = i
 		elif isinstance(tok, sqlparse.sql.Token) and tok.value.upper() == 'WHERE':
-			index_where = i		
+			index_where = i
 	for i, tok in enumerate(token_list[index_from:index_where]):
 		if isinstance(tok, sqlparse.sql.IdentifierList):
 			for j, k in enumerate(tok):
@@ -150,7 +158,7 @@ def all_same(items):
 
 # This function take one open csv file, a list of row_indice for one csv, a list of attribute (in the SELECT part) as input and return the attribute name and value result in the tuple form. Note that this function service the FindValueinMultipleCsv() function as this function only accepted single filename and single row_indice list for one csv.
 def Findvalueincsv(filename, row_indice, volume_value_list):
-	name = './data/' + filename
+	name = filename
 	with open(name, 'r', encoding="utf8") as filename_open:
 		f = csv.reader(filename_open)
 		filename_open.seek(0)
@@ -171,7 +179,9 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 					attribute_name_list.append(value)
 		for k, row in enumerate(f):
 			for j, ind in enumerate(row_indice):
+				#print("ind1 is:",j, "k is", k+1)
 				if ind == k+1:
+				#	print("ind2 is:",ind)
 					for j, h in enumerate(volume_index):
 						if row[h] != '':
 							attribute_tuple.append(row[h])
@@ -181,14 +191,75 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 					for insame in indice_samevalue:
 						value_result[insame] = tuple(attribute_tuple)
 					attribute_tuple = []
-#			if k == row_indice[len(row_indice)-1]:
-#				break
+			#if k == row_indice[len(row_indice)-1]:
+			#	break
 
 		if volume_index == [] or value_result == []:
 			print("error: cannot find attribute in csv with referenced name or with the row indice")
-		#print(volume_value_list)	
+		#print(volume_value_list)
 		attribute_name_tuple = tuple(attribute_name_list)
 	return attribute_name_tuple, value_result
+
+def Findvalueincsv_offset(filename, row_offset, volume_value_list):
+	name = filename
+	with open(name, 'r', encoding="utf8") as filename_open:
+		f = csv.reader(filename_open)
+		filename_open.seek(0)
+		row1 = next(f)
+		volume_index = []
+		value_result = [('Null',)]*len(row_offset)
+		attribute_tuple = []
+		attribute_name_list = []
+
+		# the list of attribute name corresponding to the final attribute_tuple, in case some volume in volume_value_list has values that are not an attribute in f
+
+		if volume_value_list == [-1]: # corresponding to the Selectparse(sql) function, if SELECT *, should print all
+			volume_value_list = list(row1)
+		for i, value in enumerate(volume_value_list):
+			for m in range(0, len(row1)):
+				if row1[m] == value:
+					volume_index.append(m)
+					attribute_name_list.append(value)
+		for j, ind in enumerate(row_offset):
+			filename_open.seek(ind)
+			row = next(filename_open)
+			for j, h in enumerate(volume_index):
+				if row[h] != '':
+					value_result.append(row[h])
+				else:
+					value_result.append('')
+		if volume_index == [] or value_result == []:
+			print("error: cannot find attribute in csv with referenced name or with the row indice")
+		# print(volume_value_list)
+		attribute_name_tuple = tuple(attribute_name_list)
+	return attribute_name_tuple, value_result
+
+	# 	for k, row in enumerate(f):
+	# 		for j, ind in enumerate(row_indice):
+	# 			#print("ind1 is:",j, "k is", k+1)
+	# 			if ind == k+1:
+	# 			#	print("ind2 is:",ind)
+	# 				for j, h in enumerate(volume_index):
+	# 					if row[h] != '':
+	# 						attribute_tuple.append(row[h])
+	# 					else:
+	# 						attribute_tuple.append('')
+	# 				indice_samevalue = indices(row_indice, k+1)
+	# 				for insame in indice_samevalue:
+	# 					value_result[insame] = tuple(attribute_tuple)
+	# 				attribute_tuple = []
+	# 		#if k == row_indice[len(row_indice)-1]:
+	# 		#	break
+    #
+	# 	if volume_index == [] or value_result == []:
+	# 		print("error: cannot find attribute in csv with referenced name or with the row indice")
+	# 	#print(volume_value_list)
+	# 	attribute_name_tuple = tuple(attribute_name_list)
+	# return attribute_name_tuple, value_result
+
+
+
+
 
 
 def indices(mylist, value):
@@ -197,7 +268,7 @@ def indices(mylist, value):
 
 
 
-# This function take a list of open csv file, a 2-level list of row_indice for multiple csv, a list of attribute (in the SELECT part) as input and return the attribute name and value result in the tuple form. 
+# This function take a list of open csv file, a 2-level list of row_indice for multiple csv, a list of attribute (in the SELECT part) as input and return the attribute name and value result in the tuple form.
 def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 	result_list = []
 	final_result = []
@@ -206,7 +277,7 @@ def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 	separate_attribute=[]
 	separate_result = []
 	for i, file in enumerate(csv_list):
-		separate_attribute, separate_result = Findvalueincsv(file, tuplelist_for_csvs[i], [attribute_list[i]])
+		separate_attribute, separate_result = Findvalueincsv_offset(file, tuplelist_for_csvs[i], [attribute_list[i]])
 		final_attributelist += separate_attribute
 		if final_result == []:
 			final_result = separate_result
@@ -217,6 +288,8 @@ def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 
 if __name__ == '__main__':
 	Main()
+
+
 
 
 
