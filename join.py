@@ -1,4 +1,6 @@
 import itertools
+import os
+import sys
 from myCSV import *
 from mybtree import *
     
@@ -21,7 +23,10 @@ def single_join_filter_one(btree, operator, value):
     elif operator == '>=':
         value_list = list(btree.values(min = value, max = btree.maxKey()))
     elif operator == '=':
-        value_list = [btree[value]]
+        try:
+            value_list =[btree[value]]
+        except:
+            value_list = []
     elif operator == '<>':
         ex_value_list = btree[value]
         all_value_list = list(btree.values())
@@ -492,6 +497,7 @@ def A_AB_and(A, AB, id):
     '''
     output = []
     for i in range(len(AB)):
+#        print([AB[i][id]] + A)
         temp1 = and_condition_single([AB[i][id]] + A)
         temp2 = [AB[i][1-id]]
         if len(temp1[0]) != 0 and len(temp2[0]) != 0:
@@ -556,7 +562,357 @@ def AB_AC(AB, AC, id1, id2):
         tem = or_condition_single([AC[j][id2]] + tem)
     AC_new = A_AB_and(tem, AC, id2)
     return [AB_new, AC_new]
-    
+
+def A_a_B_b_file(path1, offsetlist1, attr1, path2, offsetlist2, attr2, operator, isNumber):
+    '''
+    !!!! important: file1 must be the filtered one.
+    '''
+    out = []
+    with open(path1, 'r', encoding="ISO-8859-1") as file1:
+        with open(path2, 'r', encoding="ISO-8859-1") as file2:
+            f1 = csv.reader(file1)
+            f2 = csv.reader(file2)
+            for i in range(len(offsetlist1[0])):
+                temp1 = [offsetlist1[0][i]]
+                temp2 = []
+                for j in range(len(offsetlist2[0])):
+                    file1.seek(0)
+                    file2.seek(0)
+                    file1.seek(offsetlist1[0][i])
+                    file2.seek(offsetlist2[0][j])
+                    row1 = next(f1)
+                    row2 = next(f2)
+                    if isNumber:
+                        if operator == '=' and float(row1[attr1]) == float(row2[attr2]):
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '<' and float(row1[attr1]) < float(row2[attr2]):
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '<=' and float(row1[attr1]) <= float(row2[attr2]):
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '>' and float(row1[attr1]) > float(row2[attr2]):
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '>=' and float(row1[attr1]) >= float(row2[attr2]):
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '<>' and float(row1[attr1]) != float(row2[attr2]):
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                    else:
+                        if operator == '=' and row1[attr1].upper() == row2[attr2].upper():
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '<' and row1[attr1].upper() < row2[attr2].upper():
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '<=' and row1[attr1].upper() <= row2[attr2].upper():
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '>' and row1[attr1].upper() > row2[attr2].upper():
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '>=' and row1[attr1].upper() >= row2[attr2].upper():
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                        elif operator == '<>' and row1[attr1].upper() != row2[attr2].upper():
+                            temp2 = temp2 + [offsetlist2[0][j]]
+                if len(temp2) > 0:
+                    temp = [temp1] + [temp2]
+                    out = out + [temp]
+    return out
+
+def A_a_B_b_file_plus(path1, offsetlist1, attr1, path2, offsetlist2, attr2, operator, value):
+    '''
+    !!!! important: file1 must be the filtered one.
+    '''
+    out = []
+    with open(path1, 'r', encoding="ISO-8859-1") as file1:
+        with open(path2, 'r', encoding="ISO-8859-1") as file2:
+            f1 = csv.reader(file1)
+            f2 = csv.reader(file2)
+            for i in range(len(offsetlist1[0])):
+                temp1 = [offsetlist1[0][i]]
+                temp2 = []
+                for j in range(len(offsetlist2[0])):
+                    file1.seek(0)
+                    file2.seek(0)
+                    file1.seek(offsetlist1[0][i])
+                    file2.seek(offsetlist2[0][j])
+                    row1 = next(f1)
+                    row2 = next(f2)
+                    if operator == '=' and float(row1[attr1]) == float(row2[attr2]) + value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '<' and float(row1[attr1]) < float(row2[attr2]) + value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '<=' and float(row1[attr1]) <= float(row2[attr2]) + value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '>' and float(row1[attr1]) > float(row2[attr2]) + value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '>=' and float(row1[attr1]) >= float(row2[attr2]) + value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '<>' and float(row1[attr1]) != float(row2[attr2]) + value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                if len(temp2) > 0:
+                    temp = [temp1] + [temp2]
+                    out = out + [temp]
+    return out    
+
+def A_a_B_b_file_multi(path1, offsetlist1, attr1, path2, offsetlist2, attr2, operator, value):
+    '''
+    !!!! important: file1 must be the filtered one.
+    '''
+    out = []
+    with open(path1, 'r', encoding="ISO-8859-1") as file1:
+        with open(path2, 'r', encoding="ISO-8859-1") as file2:
+            f1 = csv.reader(file1)
+            f2 = csv.reader(file2)
+            for i in range(len(offsetlist1[0])):
+                temp1 = [offsetlist1[0][i]]
+                temp2 = []
+                for j in range(len(offsetlist2[0])):
+                    file1.seek(0)
+                    file2.seek(0)
+                    file1.seek(offsetlist1[0][i])
+                    file2.seek(offsetlist2[0][j])
+                    row1 = next(f1)
+                    row2 = next(f2)
+                    if operator == '=' and float(row1[attr1]) == float(row2[attr2]) * value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '<' and float(row1[attr1]) < float(row2[attr2]) * value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '<=' and float(row1[attr1]) <= float(row2[attr2]) * value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '>' and float(row1[attr1]) > float(row2[attr2]) * value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '>=' and float(row1[attr1]) >= float(row2[attr2]) * value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                    elif operator == '<>' and float(row1[attr1]) != float(row2[attr2]) * value:
+                        temp2 = temp2 + [offsetlist2[0][j]]
+                if len(temp2) > 0:
+                    temp = [temp1] + [temp2]
+                    out = out + [temp]
+    return out
+
+def btree_A_a_file(btree, path, offsetlist, attr, operator, isNumber):
+    '''
+    !!!! important: file1 must be the filtered one.
+    offsetlist : [[1,2,3]]
+    btree < file
+    '''
+
+    out = []
+    with open(path, 'r', encoding="ISO-8859-1") as file:
+        f = csv.reader(file)
+        for i in range(len(offsetlist[0])):
+            file.seek(0)
+            file.seek(offsetlist[0][i])
+            row = next(f)
+            temp1 = [offsetlist[0][i]]
+            if isNumber:
+                value = float(row[attr])
+            else:
+                value = row[attr].upper()
+            temp2 = single_join_filter_one(btree, operator, value)
+            print(temp2)
+#            print(temp2)
+            if len(temp2[0]) > 0:
+                temp = temp2 + [temp1]
+                out = out + [temp]
+    return out
+
+def btree_A_a_file_plus(btree, path, offsetlist, attr, operator, val):
+    '''
+    !!!! important: file1 must be the filtered one.
+    offsetlist : [[1,2,3]]
+    btree < file
+    '''
+
+    out = []
+    with open(path, 'r', encoding="ISO-8859-1") as file:
+        f = csv.reader(file)
+        for i in range(len(offsetlist[0])):
+            file.seek(0)
+            file.seek(offsetlist[0][i])
+            row = next(f)
+            temp1 = [offsetlist[0][i]]
+            value = float(row[attr]) + val
+            temp2 = single_join_filter_one(btree, operator, value)
+            print(temp2)
+#            print(temp2)
+            if len(temp2[0]) > 0:
+                temp = temp2 + [temp1]
+                out = out + [temp]
+    return out
+
+def btree_A_a_file_multi(btree, path, offsetlist, attr, operator, val):
+    '''
+    !!!! important: file1 must be the filtered one.
+    offsetlist : [[1,2,3]]
+    btree < file
+    '''
+
+    out = []
+    with open(path, 'r', encoding="ISO-8859-1") as file:
+        f = csv.reader(file)
+        for i in range(len(offsetlist[0])):
+            file.seek(0)
+            file.seek(offsetlist[0][i])
+            row = next(f)
+            temp1 = [offsetlist[0][i]]
+            value = float(row[attr]) * val
+            temp2 = single_join_filter_one(btree, operator, value)
+            print(temp2)
+#            print(temp2)
+            if len(temp2[0]) > 0:
+                temp = temp2 + [temp1]
+                out = out + [temp]
+    return out
+
+def A_a_btree_file(path, offsetlist, attr, btree, operator, isNumber):
+    '''
+    !!!! important: file1 must be the filtered one.
+    offsetlist : [[1,2,3]]
+    btree < file
+    '''
+
+    out = []
+    with open(path, 'r', encoding="ISO-8859-1") as file:
+        f = csv.reader(file)
+        for i in range(len(offsetlist[0])):
+            file.seek(0)
+            file.seek(offsetlist[0][i])
+            row = next(f)
+            temp1 = [offsetlist[0][i]]
+            if isNumber:
+                value = float(row[attr])
+            else:
+                value = row[attr].upper()
+            if operator == '<':
+                op = '>'
+            elif operator == '<=':
+                op = '>='
+            elif operator == '>':
+                op = '<'
+            elif operator == '>=':
+                op = '<='
+            else:
+                op = operator
+            temp2 = single_join_filter_one(btree, op, value)
+#            print(len(temp2[0]))
+            if len(temp2[0]) > 0 and len(temp1) > 0:
+                temp = [temp1] + temp2
+                out = out + [temp]
+    return out
+
+def A_a_btree_file_plus(path, offsetlist, attr, btree, operator, val):
+    '''
+    !!!! important: file1 must be the filtered one.
+    offsetlist : [[1,2,3]]
+    btree < file
+    '''
+
+    out = []
+    with open(path, 'r', encoding="ISO-8859-1") as file:
+        f = csv.reader(file)
+        for i in range(len(offsetlist[0])):
+            file.seek(0)
+            file.seek(offsetlist[0][i])
+            row = next(f)
+            temp1 = [offsetlist[0][i]]
+            value = float(row[attr]) + val
+            if operator == '<':
+                op = '>'
+            elif operator == '<=':
+                op = '>='
+            elif operator == '>':
+                op = '<'
+            elif operator == '>=':
+                op = '<='
+            else:
+                op = operator
+            temp2 = single_join_filter_one(btree, op, value)
+#            print(len(temp2[0]))
+            if len(temp2[0]) > 0 and len(temp1) > 0:
+                temp = [temp1] + temp2
+                out = out + [temp]
+    return out
+
+def A_a_btree_file_multi(path, offsetlist, attr, btree, operator, val):
+    '''
+    !!!! important: file1 must be the filtered one.
+    offsetlist : [[1,2,3]]
+    btree < file
+    '''
+
+    out = []
+    with open(path, 'r', encoding="ISO-8859-1") as file:
+        f = csv.reader(file)
+        for i in range(len(offsetlist[0])):
+            file.seek(0)
+            file.seek(offsetlist[0][i])
+            row = next(f)
+            temp1 = [offsetlist[0][i]]
+            value = float(row[attr]) * val
+            if operator == '<':
+                op = '>'
+            elif operator == '<=':
+                op = '>='
+            elif operator == '>':
+                op = '<'
+            elif operator == '>=':
+                op = '<='
+            else:
+                op = operator
+            temp2 = single_join_filter_one(btree, op, value)
+#            print(len(temp2[0]))
+            if len(temp2[0]) > 0 and len(temp1) > 0:
+                temp = [temp1] + temp2
+                out = out + [temp]
+    return out
+
+def get_small_btree(path, offsetlist, attr, isNumber):
+    '''
+    :param offsetlist:
+    :return:
+    '''
+    dict = {}
+    with open(path, 'r', encoding="ISO-8859-1") as file:
+        f = csv.reader(file)
+        for i in range(len(offsetlist[0])):
+            file.seek(0)
+            file.seek(offsetlist[0][i])
+            row = next(f)
+            # print(row[1])
+            if isNumber:
+                try:
+                    key = float(row[attr])
+                except:
+                    key = 0.0
+            else:
+                key = row[attr].upper()
+            if key in dict:
+                dict[key].append(offsetlist[0][i])
+            else:
+                # create a list that store the row index w.r.t the tuple
+                dict[key] = [offsetlist[0][i]]
+    sys.setrecursionlimit(10000)
+    t = OOBTree()
+    t.update(dict)
+    return t
+
+def get_A_B_AB_and(list):
+    '''
+
+    :param list: [[[1,2],[3,4]],[[5,6],[7,8,9]]]
+    :return:
+    '''
+    temp1 = []
+    temp2 = []
+    for i in range(len(list)):
+        temp1 = temp1 + [list[i][0]]
+        temp2 = temp2 + [list[i][1]]
+    return and_condition_single(temp1), and_condition_single(temp2)
+
+def get_A_B_AB_or(list):
+    temp1 = []
+    temp2 = []
+    for i in range(len(list)):
+        temp1 = temp1 + [list[i][0]]
+        temp2 = temp2 + [list[i][1]]
+    return or_condition_single(temp1), or_condition_single(temp2)
+
 #def AB_AB_and(AB1, AB2):
 #    '''
 #    
@@ -609,6 +965,10 @@ list_row = [[item[0], item[1]] for item in list_row]
     
 #double_join_filter(btree_a2,btree_a1,'<')        
 '''
+
+
+
+
 
 
 

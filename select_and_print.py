@@ -4,7 +4,7 @@ import time
 
 
 
-def Main():
+# def Main():
 
 	#sql_statement = "SELECT M.title_year, M.movie_title, A.Award, M.imdb_score, M.movie_facebook_likes FROM movies.csv M JOIN oscars.csv A ON (M.movie_title = A.Film) WHERE A.Winner = 1 AND (M.imdb_score < 6 OR M.movie_facebook_likes < 10000)"
 	#sql_statement = "SELECT movie_title, title_year, imdb_score FROM movies.csv WHERE director_name = 'Ang Lee' AND imdb_score > 7"
@@ -18,10 +18,10 @@ def Main():
 	#rowindice_result_from_selection = [[2564, 7172, 5129, 8202, 9749]]
 	#rowindice_result_from_selection =[[9590], [9595]]
 	#rowindice_result_from_selection =[[3959, 3989, 3989, 3870, 3671, 3787, 3568, 4075, 3862], [2512, 2760, 2762, 2075, 787, 3961, 5301, 932, 3717], [2522, 2771, 2771, 2085, 800, 3970, 5312, 940, 3727]]
-	sql_statement = "SELECT M.movie_title FROM movies.cscv M"
-	alias_index_result = ['M']
-	rowindice_result_from_selection =[[3787, 3568, 4075, 5862]]
-	ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
+	# sql_statement = "SELECT M.movie_title FROM movies.cscv M"
+	# alias_index_result = ['M']
+	# rowindice_result_from_selection =[[3787, 3568, 4075, 5862]]
+	# ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_result)
 
 
 
@@ -46,7 +46,10 @@ def ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_
 # the function to print the final table line by line, list_name is the statement representing the final table
 def printlist(list_name):
 	for i, row in enumerate(list_name):
-		print(row)
+		r = []
+		for s in row:
+			r.append(s.encode('utf-8'))
+		print(r)
 
 
 # the function the parse the SELECT part (before FROM) with sql statement as the input. If the SELECT is not *, the outpub is a list of alias (can be None is no alias provided) and a list of the corresponding attribute. If the SELECT is *, will return alias_list as [None] and attribute list as [-1], this * statement will be check again when pull out tuple and attribute from the csv document again. The sequence is determined by the appearance in the SELECT part.
@@ -286,8 +289,8 @@ def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 	return final_attributelist, final_result
 
 
-if __name__ == '__main__':
-	Main()
+# if __name__ == '__main__':
+# 	Main()
 
 
 

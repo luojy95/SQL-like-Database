@@ -47,6 +47,7 @@ def main():
         except:
             selection = 0
         if selection == 1:
+            # Build Btrees for the input attribute
             ind = input("Build index for:\n")
             Attribs= ind.split(" ")
             filepath = Attribs[0]
@@ -61,6 +62,7 @@ def main():
                     buildTreeForSingleAttr(filename, filepath, options.indexpath, AttrId, return_tree=False, isNumber=False)
                 print("Index for " + Attribs[1] + " build successfully")
         elif selection == 2:
+            # Execute Query
             sql = input("Input SQL Command:\n")
             S = Sql_parsing(sql, options.indexpath)
         elif selection == 3:

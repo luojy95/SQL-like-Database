@@ -4,12 +4,23 @@ import ntpath
 from join import *
 from select_and_print import ProjectAndPrint
 import time
+import csv
 
 class Sql_parsing(object):
-
+    """
+    This class is built to parse SQL input, optimize query and output query result.
+    """
     def __init__(self, sql, indexpath):
-        # Currently supports only standard SELECT statements
-        # Holds original SQL
+        """
+        This funciton build the object with SQL input and Btree file path and print out query result with
+        Args:
+            sql(string): SQL input in the terminal
+            indexpath(string): path to store the btree file
+            self.alias_dic: a dictionary that stores the relation of csv file and their alias
+        Returns:
+            print out query results and count time consuming
+         """
+        self.opt = 5000
         self.sql = sql
         self.parsed = sqlparse.parse(sql)
         self.token_list = self.parsed[0].tokens
@@ -94,53 +105,6 @@ class Sql_parsing(object):
             print("error: require alias for SELECT as the final table is from multiple CSVs")
         return project_csv_name, project_alias_name, project_attribute_name
 
-    # Define the operation of dealing with AND operator when generating Prefix Expression
-    # def ANDop(self, ele, temporary_stack, prefix):
-    #     if len(temporary_stack) == 0:
-    #         temporary_stack.append(ele)
-    #         return temporary_stack, prefix
-    #     if temporary_stack[-1].value.upper() == 'NOT':
-    #         a = temporary_stack.pop()
-    #         prefix.append(a)
-    #         temporary_stack, prefix = self.ANDop(ele, temporary_stack, prefix)
-    #         return temporary_stack, prefix
-    #     else:
-    #         temporary_stack.append(ele)
-    #         return temporary_stack, prefix
-    #
-    # def ORop(self, ele, temporary_stack, prefix):
-    #     if len(temporary_stack) == 0 or temporary_stack[-1].value.upper() == 'OR':
-    #         temporary_stack.append(ele)
-    #         return temporary_stack, prefix
-    #     else:
-    #         a = temporary_stack.pop()
-    #         prefix.append(a)
-    #         temporary_stack, prefix = self.ORop(ele, temporary_stack, prefix)
-    #         return temporary_stack, prefix
-    #
-    #
-    # # Parse all the conditions in the WHERE section and transfer the Bollean expression into Prefix Expression
-    # def Whereparse(self):
-    #     prefix = []
-    #     for tok in self.token_list:
-    #         if isinstance(tok, sqlparse.sql.Where):
-    #             condition_list = tok.tokens
-    #             break;
-    #     temporary_stack = []
-    #     for i in range(len(condition_list)):
-    #         ele = condition_list.pop()
-    #         if isinstance(ele, sqlparse.sql.Comparison):
-    #             prefix.append(ele)
-    #         elif ele.value.upper() == 'NOT' or len(temporary_stack) == 0:
-    #             temporary_stack.append(ele)
-    #         elif ele.value.upper() == 'AND':
-    #             temporary_stack,prefix= self.ANDop(ele,temporary_stack,prefix)
-    #         elif ele.value.upper() == 'OR':
-    #             temporary_stack, prefix = self.ORop(ele, temporary_stack, prefix)
-    #     for j in range(len(temporary_stack)):
-    #         op = temporary_stack.pop()
-    #         prefix.append(op)
-    #     return prefix
 
     # Parse all the conditions in the WHERE section and transfer the Bollean expression into Prefix Expression
     def Whereparse(self):
@@ -192,36 +156,6 @@ class Sql_parsing(object):
             else:
                 pass
         return comparison
-
-
-    # get the index for one table query conditions
-    # def getSingleTableQuery(self, prefix):
-    #     calculation_stack =[]
-    #     for i in range(len(prefix)):
-    #         if prefix[i].value.upper == 'NOT':
-    #             C = calculation_stack.pop()
-    #             C = self.getNOT(C)
-    #             raw_result = self.Transcomp(C)
-    #             calculation_stack.append(raw_result)
-    #         elif prefix[i].value.upper == 'AND':
-    #             C1 = calculation_stack.pop()
-    #             C2 = calculation_stack.pop()
-    #             if isinstance(C1, sqlparse.sql.Comparison):
-    #                 C1_raw_result = self.Transcomp(C1)
-    #             if isinstance(C2, sqlparse.sql.Comparison):
-    #                 C2_raw_result = self.Transcomp(C2)
-    #         elif prefix[i].value.upper == 'OR':
-    #             pass
-    #         else:
-    #             calculation_stack.append(prefix[i])
-
-    # Determine if there is join conditions in SQL
-    # def hasJoin(self,ANDconditions):
-    #     for comp in ANDconditions:
-    #         right_part = comp.right
-    #         if isinstance(right_part, sqlparse.sql.Operation) or isinstance(right_part, sqlparse.sql.Identifier):
-    #             return True
-    #     return False
 
         # Determine if there is join conditions in SQL
     def hasJoin(self):
@@ -317,23 +251,6 @@ class Sql_parsing(object):
             result[alias] = output
         return result
 
-    def getJoinQuery(self, raw_join, single_result):
-        raw_list = raw_join[0]
-        index = raw_join[1]
-        A = index[0]
-        B = index[1]
-        A_single = single_result[A]
-        B_single = single_result[B]
-        if A_single == [] and B_single == []:
-            output = raw_list
-        elif A_single == [] and B_single != []:
-            output = A_AB_and(B_single, raw_list, 1)
-        elif A_single == [] and B_single != []:
-            output = A_AB_and(A_single, raw_list, 0)
-        else:
-            output = A_AB_B_and(A_single, raw_list, B_single)
-        result = [output, index]
-        return result
 
     def getJJQuery(self, JJ_cond, table_list):
         join_result =[]
@@ -454,8 +371,7 @@ class Sql_parsing(object):
                         if a != b:
                             JJ_cond[(a,b)] =[]
                 for j in join_cond:
-                    raw_join = self.TransJoincomp(j)
-                    raw_result = self.getJoinQuery(raw_join, single_result)
+                    raw_result = self.TransJoincomp(j, single_result)
                     JJ_cond[raw_result[1]].append(raw_result[0])
                 join_result = self.getJJQuery(JJ_cond,table_list)
                 final_join_result = self.getFinalJoinResults(join_result)
@@ -474,45 +390,19 @@ class Sql_parsing(object):
         return Final_result
 
 
-
-
-    # Find csv name for the corresponding attribute
-    def FindCsvpathandAttrId(self, tok):
-        alias = tok.get_parent_name()
-        csv_path = self.alias_dic[alias]
-        attribute = tok.get_real_name()
-        attrId = getAttrID(csv_path, attribute)
-        return alias, csv_path, attrId
-
-    # get Btree file path for the corresponding attribute
-    def getBtree(self, tok, indexpath):
-        alias,csv_path, attrId = self.FindCsvpathandAttrId(tok)
-        csv_name = ntpath.basename(csv_path)
-        btree_path = indexpath + csv_name.split('.')[0] + '_Attr_' + str(attrId) + '_.tree'
-        return btree_path
-
-    def is_number(self,s):
-        try:
-            float(s)
-            return True
-        except ValueError:
-            return False
-
     # Transfer Comparisons into raw query results
-    def TransJoincomp(self, comparison):
+    def TransJoincomp(self, comparison, single_result):
+        op = ''
+        value = ''
         left_part = comparison.left
         right_part = comparison.right
-        left_btree = self.getBtree(left_part,self.indexpath)
         raw_list = []
         alias1, csv_path1, attrId1 = self.FindCsvpathandAttrId(left_part)
         if isinstance(right_part, sqlparse.sql.Operation):
-            op = ''
-            right_btree = ''
             tok_list = right_part.tokens
             value = float(tok_list[-1].value)
             for ele in tok_list:
                 if isinstance(ele, sqlparse.sql.Identifier):
-                    right_btree = self.getBtree(ele, self.indexpath)
                     alias2, csv_path2, attrId2 = self.FindCsvpathandAttrId(ele)
                 elif ele.value == '+':
                     op = '+'
@@ -528,152 +418,690 @@ class Sql_parsing(object):
                     break
                 else:
                     pass
-            if op == '+':
+        else:
+            alias2, csv_path2, attrId2 = self.FindCsvpathandAttrId(right_part)
+        index = (alias1, alias2)
+        if single_result[alias1] == [[]] and single_result[alias2] == [[]]:
+            left_btree = self.getBtree(left_part, self.indexpath)
+            if isinstance(right_part, sqlparse.sql.Operation):
+                right_btree = ''
+                tok_list = right_part.tokens
+                for ele in tok_list:
+                    if isinstance(ele, sqlparse.sql.Identifier):
+                        right_btree = self.getBtree(ele, self.indexpath)
+                        break
+                    else:
+                        pass
+                if op == '+':
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                            raw_list = double_join_filter_plus(left_btree, right_btree, tok.value, value)
+                            index = (alias1, alias2)
+                            break
+                        elif tok.value == '>':
+                            raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                            index = (alias2, alias1)
+                            break
+                        elif tok.value == '>=':
+                            raw_list = double_join_filter_plus(right_btree, left_btree, '<=', value)
+                            index = (alias2, alias1)
+                            break
+                        else:
+                            pass
+                elif op == '-':
+                    value = -1 * value
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                            raw_list = double_join_filter_plus(left_btree, right_btree, tok.value, value)
+                            index = (alias1, alias2)
+                            break
+                        elif tok.value == '>':
+                            raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                            index = (alias2, alias1)
+                            break
+                        elif tok.value == '>=':
+                            raw_list = double_join_filter_plus(right_btree, left_btree, '<=', value)
+                            index = (alias2, alias1)
+                            break
+                        else:
+                            pass
+                elif op == '*':
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                            raw_list = double_join_filter_multi(left_btree, right_btree, tok.value, value)
+                            index = (alias1, alias2)
+                            break
+                        elif tok.value == '>':
+                            raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
+                            index = (alias2, alias1)
+                            break
+                        elif tok.value == '>=':
+                            raw_list = double_join_filter_multi(right_btree, left_btree, '<=', value)
+                            index = (alias2, alias1)
+                            break
+                        else:
+                            pass
+                else:
+                    value = 1 / value
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                            raw_list = double_join_filter_multi(left_btree, right_btree, tok.value, value)
+                            index = (alias1, alias2)
+                            break
+                        elif tok.value == '>':
+                            raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
+                            index = (alias2, alias1)
+                            break
+                        elif tok.value == '>=':
+                            raw_list = double_join_filter_multi(right_btree, left_btree, '<=', value)
+                            index = (alias2, alias1)
+                            break
+                        else:
+                            pass
+            else:
+                right_btree = self.getBtree(right_part, self.indexpath)
                 for tok in comparison.tokens:
-                    if tok.value == '=':
-                        raw_list = double_join_filter_plus(left_btree, right_btree, '=', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '<':
-                        raw_list = double_join_filter_plus(left_btree, right_btree, '<', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '<=':
-                        raw_list = double_join_filter_plus(left_btree, right_btree, '<=', value)
+                    if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                        raw_list = double_join_filter(left_btree, right_btree, tok.value)
                         index = (alias1, alias2)
                         break
                     elif tok.value == '>':
-                        raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                        raw_list = double_join_filter(right_btree, left_btree, '<')
                         index = (alias2, alias1)
+                        break
+                    elif tok.value == '>=':
+                        raw_list = double_join_filter(right_btree, left_btree, '<=')
+                        index = (alias2, alias1)
+                        break
+                    else:
+                        pass
+        elif single_result[alias1] == [[]]:
+            left_btree = self.getBtree(left_part, self.indexpath)
+            if len(single_result[alias2]) < self.opt / 2:
+                if op == '':
+                    with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
+                        f1 = csv.reader(file1)
+                        file1.seek(0)
+                        file1.seek(single_result[alias1][0][0])
+                        row1 = next(f1)
+                        v = row1[attrId1]
+                    if self.is_number(v):
+                        isNumber = 1
+                    else:
+                        isNumber = 0
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                        tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                            raw_list = btree_A_a_file(left_btree, csv_path2, single_result[alias2], attrId2, tok.value, isNumber)
+                            break
+                        else:
+                            pass
+                else:
+                    if op == '+':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = btree_A_a_file_plus(left_btree, csv_path2, single_result[alias2],
+                                                          attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '-':
+                        value = -1 * value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = btree_A_a_file_plus(left_btree, csv_path2, single_result[alias2],
+                                                          attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '*':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = btree_A_a_file_multi(left_btree, csv_path2, single_result[alias2],
+                                                          attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+                    else:
+                        value = 1 / value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = btree_A_a_file_multi(left_btree, csv_path2, single_result[alias2],
+                                                          attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
 
-                        break
-                    elif tok.value == '>=':
-                        raw_list = double_join_filter_plus(right_btree, left_btree, '<=', value)
-                        index = (alias2, alias1)
-                        break
-                    elif tok.value == '<>':
-                        raw_list = double_join_filter_plus(left_btree, right_btree, '<>', value)
-                        index = (alias1, alias2)
-                        break
+            else:
+                with open(csv_path2, 'r', encoding="ISO-8859-1") as file2:
+                    f2 = csv.reader(file2)
+                    file2.seek(0)
+                    file2.seek(single_result[alias2][0][0])
+                    row2 = next(f2)
+                    v = row2[attrId2]
+                if self.is_number(v):
+                    isNumber2 = 1
+                else:
+                    isNumber2 = 0
+                right_btree = get_small_btree(csv_path2, single_result[alias2], attrId2, isNumber2)
+                if op == '':
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                            raw_list = double_join_filter(left_btree, right_btree, tok.value)
+                            break
+                        elif tok.value == '>':
+                            raw_list = double_join_filter(right_btree, left_btree, '<')
+                            index = (alias2, alias1)
+                        elif tok.value == '>=':
+                            raw_list = double_join_filter(right_btree, left_btree, '<=')
+                            index = (alias2, alias1)
+                        else:
+                            pass
+                else:
+                    if op == '+':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_plus(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+                    elif op == '-':
+                        value = -1 * value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_plus(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+                    elif op == '*':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_multi(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
                     else:
-                        pass
-            elif op == '-':
-                value = -1 * value
-                for tok in comparison.tokens:
-                    if tok.value == '=':
-                        raw_list = double_join_filter_plus(left_btree, right_btree, '=', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '<':
-                        raw_list = double_join_filter_plus(left_btree, right_btree, '<', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '<=':
-                        raw_list = double_join_filter_plus(left_btree, right_btree, '<=', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '>':
-                        raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
-                        index = (alias2, alias1)
-                        break
-                    elif tok.value == '>=':
-                        raw_list = double_join_filter_plus(right_btree, left_btree, '<=', value)
-                        index = (alias2, alias1)
-                        break
-                    elif tok.value == '<>':
-                        raw_list = double_join_filter_plus(left_btree, right_btree, '<>', value)
-                        index = (alias1, alias2)
-                        break
-                    else:
-                        pass
-            elif op == '*':
-                for tok in comparison.tokens:
-                    if tok.value == '=':
-                        raw_list = double_join_filter_multi(left_btree, right_btree, '=', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '<':
-                        raw_list = double_join_filter_multi(left_btree, right_btree, '<', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '<=':
-                        raw_list = double_join_filter_multi(left_btree, right_btree, '<=', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '>':
-                        raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
-                        index = (alias2, alias1)
-                        break
-                    elif tok.value == '>=':
-                        raw_list = double_join_filter_multi(right_btree, left_btree, '<=', value)
-                        index = (alias2, alias1)
-                        break
-                    elif tok.value == '<>':
-                        raw_list = double_join_filter_multi(left_btree, right_btree, '<>',value)
-                        index = (alias1, alias2)
+                        value = 1 / value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_multi(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+        elif single_result[alias2] == [[]]:
+            if isinstance(right_part, sqlparse.sql.Operation):
+                right_btree = ''
+                tok_list = right_part.tokens
+                for ele in tok_list:
+                    if isinstance(ele, sqlparse.sql.Identifier):
+                        right_btree = self.getBtree(ele, self.indexpath)
                         break
                     else:
                         pass
             else:
-                value = 1 / value
-                for tok in comparison.tokens:
-                    if tok.value == '=':
-                        raw_list = double_join_filter_multi(left_btree, right_btree, '=', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '<':
-                        raw_list = double_join_filter_multi(left_btree, right_btree, '<', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '<=':
-                        raw_list = double_join_filter_multi(left_btree, right_btree, '<=', value)
-                        index = (alias1, alias2)
-                        break
-                    elif tok.value == '>':
-                        raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
-                        index = (alias2, alias1)
-                        break
-                    elif tok.value == '>=':
-                        raw_list = double_join_filter_multi(right_btree, left_btree, '<=', value)
-                        index = (alias2, alias1)
-                        break
-                    elif tok.value == '<>':
-                        raw_list = double_join_filter_multi(left_btree, right_btree, '<>',value)
-                        index = (alias1, alias2)
-                        break
+                right_btree = self.getBtree(right_part, self.indexpath)
+            if len(single_result[alias1]) < self.opt / 2:
+                if op == '':
+                    with open(csv_path2, 'r', encoding="ISO-8859-1") as file2:
+                        f2 = csv.reader(file2)
+                        file2.seek(0)
+                        file2.seek(single_result[alias2][0][0])
+                        row2 = next(f2)
+                        v = row2[attrId2]
+                    if self.is_number(v):
+                        isNumber = 1
                     else:
-                        pass
-        else:
-            right_btree = self.getBtree(right_part,self.indexpath)
-            alias2, csv_path2, attrId2 = self.FindCsvpathandAttrId(right_part)
-            for tok in comparison.tokens:
-                if tok.value == '=':
-                    raw_list = double_join_filter(left_btree, right_btree, '=')
-                    index = (alias1, alias2)
-                    break
-                elif tok.value == '<':
-                    raw_list = double_join_filter(left_btree, right_btree, '<')
-                    index = (alias1, alias2)
-                    break
-                elif tok.value == '<=':
-                    raw_list = double_join_filter(left_btree, right_btree, '<=')
-                    index = (alias1, alias2)
-                    break
-                elif tok.value == '>':
-                    raw_list = double_join_filter(right_btree, left_btree, '<')
-                    index = (alias2, alias1)
-                    break
-                elif tok.value == '>=':
-                    raw_list = double_join_filter(right_btree, left_btree, '<=')
-                    index = (alias2, alias1)
-                    break
-                elif tok.value == '<>':
-                    raw_list = double_join_filter(left_btree, right_btree, '<>')
-                    index = (alias1, alias2)
-                    break
+                        isNumber = 0
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                        tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                            raw_list = A_a_btree_file(csv_path1, single_result[alias1], attrId1, right_btree, tok.value, isNumber)
+                            break
+                        else:
+                            pass
                 else:
-                    pass
+                    if op == '+':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_btree_file_plus(csv_path1, single_result[alias1], attrId1, right_btree,
+                                                               tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '-':
+                        value = -1 * value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_btree_file_plus(csv_path1, single_result[alias1], attrId1, right_btree,
+                                                               tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '*':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_btree_file_multi(csv_path1, single_result[alias1], attrId1, right_btree,
+                                                               tok.value, value)
+                                break
+                            else:
+                                pass
+                    else:
+                        value = 1 / value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_btree_file_multi(csv_path1, single_result[alias1], attrId1, right_btree,
+                                                               tok.value, value)
+                                break
+                            else:
+                                pass
+            else:
+                with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
+                    f1 = csv.reader(file1)
+                    file1.seek(0)
+                    file1.seek(single_result[alias1][0][0])
+                    row1 = next(f1)
+                    v = row1[attrId1]
+                if self.is_number(v):
+                    isNumber1 = 1
+                else:
+                    isNumber1 = 0
+                left_btree = get_small_btree(csv_path1, single_result[alias1], attrId1, isNumber1)
+                if op == '':
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                            raw_list = double_join_filter(left_btree, right_btree, tok.value)
+                            break
+                        elif tok.value == '>':
+                            raw_list = double_join_filter(right_btree, left_btree, '<')
+                            index = (alias2, alias1)
+                        elif tok.value == '>=':
+                            raw_list = double_join_filter(right_btree, left_btree, '<=')
+                            index = (alias2, alias1)
+                        else:
+                            pass
+                else:
+                    if op == '+':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_plus(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+                    elif op == '-':
+                        value = -1 * value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_plus(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+                    elif op == '*':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_multi(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+                    else:
+                        value = 1 / value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_multi(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+        else:
+            if len(single_result[alias1]) + len(single_result[alias2]) < self.opt:
+                with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
+                    f1 = csv.reader(file1)
+                    file1.seek(0)
+                    file1.seek(single_result[alias1][0][0])
+                    row1 = next(f1)
+                    v = row1[attrId1]
+                if self.is_number(v):
+                    isNumber = 1
+                else:
+                    isNumber = 0
+                if op == '':
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                        tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                            raw_list = A_a_B_b_file(csv_path1, single_result[alias1], attrId1, csv_path2,
+                                                    single_result[alias2], attrId2, tok.value, isNumber)
+                            break
+                        else:
+                            pass
+                else:
+                    if op == '+':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_B_b_file_plus(csv_path1, single_result[alias1], attrId1, csv_path2,
+                                                             single_result[alias2], attrId2, tok.value)
+                                break
+                            else:
+                                pass
+                    elif op == '-':
+                        value = -1 * value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_B_b_file_plus(csv_path1, single_result[alias1], attrId1, csv_path2,
+                                                             single_result[alias2], attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '*':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_B_b_file_multi(csv_path1, single_result[alias1], attrId1, csv_path2,
+                                                              single_result[alias2], attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+                    else:
+                        value = 1 / value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_B_b_file_multi(csv_path1, single_result[alias1], attrId1, csv_path2,
+                                                              single_result[alias2], attrId2, tok.value, value)
+                                index = (alias1, alias2)
+                                break
+                            else:
+                                pass
+            elif len(single_result[alias1]) < self.opt / 2:
+                if op == '':
+                    with open(csv_path2, 'r', encoding="ISO-8859-1") as file2:
+                        f2 = csv.reader(file2)
+                        file2.seek(0)
+                        file2.seek(single_result[alias2][0][0])
+                        row2 = next(f2)
+                        v = row2[attrId2]
+                    if self.is_number(v):
+                        isNumber = 1
+                    else:
+                        isNumber = 0
+                    right_btree = get_small_btree(csv_path2, single_result[alias2], attrId2, isNumber)
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                        tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                            raw_list = A_a_btree_file(csv_path1, single_result[alias1], attrId1, right_btree, tok.value, isNumber)
+                            break
+                        else:
+                            pass
+                else:
+                    right_btree = get_small_btree(csv_path2, single_result[alias2], attrId2, 1)
+                    if op == '+':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_btree_file_plus(csv_path1, single_result[alias1], attrId1, right_btree,
+                                                               tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '-':
+                        value = -1 * value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_btree_file_plus(csv_path1, single_result[alias1], attrId1, right_btree,
+                                                               tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '*':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_btree_file_multi(csv_path1, single_result[alias1], attrId1, right_btree,
+                                                               tok.value, value)
+                                break
+                            else:
+                                pass
+                    else:
+                        value = 1 / value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = A_a_btree_file_multi(csv_path1, single_result[alias1], attrId1, right_btree,
+                                                               tok.value, value)
+                                break
+                            else:
+                                pass
+            elif len(single_result[alias2]) < self.opt / 2:
+                if op == '':
+                    with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
+                        f1 = csv.reader(file1)
+                        file1.seek(0)
+                        file1.seek(single_result[alias1][0][0])
+                        row1 = next(f1)
+                        v = row1[attrId1]
+                    if self.is_number(v):
+                        isNumber = 1
+                    else:
+                        isNumber = 0
+                    left_btree = get_small_btree(csv_path1, single_result[alias1], attrId1, isNumber)
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                        tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                            raw_list = btree_A_a_file(left_btree, csv_path2, single_result[alias2], attrId2, tok.value, isNumber)
+                            break
+                        else:
+                            pass
+                else:
+                    left_btree = get_small_btree(csv_path1, single_result[alias1], attrId1, 1)
+                    if op == '+':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = btree_A_a_file_plus(left_btree, csv_path2, single_result[alias2],
+                                                          attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '-':
+                        value = -1 * value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = btree_A_a_file_plus(left_btree, csv_path2, single_result[alias2],
+                                                          attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+                    elif op == '*':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = btree_A_a_file_multi(left_btree, csv_path2, single_result[alias2],
+                                                          attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+                    else:
+                        value = 1 / value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '>' or \
+                                            tok.value == '<=' or tok.value == '>=' or tok.value == '<>':
+                                raw_list = btree_A_a_file_multi(left_btree, csv_path2, single_result[alias2],
+                                                          attrId2, tok.value, value)
+                                break
+                            else:
+                                pass
+            else:
+                with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
+                    f1 = csv.reader(file1)
+                    file1.seek(0)
+                    file1.seek(single_result[alias1][0][0])
+                    row1 = next(f1)
+                    v = row1[attrId1]
+                if self.is_number(v):
+                    isNumber1 = 1
+                else:
+                    isNumber1 = 0
+                left_btree = get_small_btree(csv_path1, single_result[alias1], attrId1, isNumber1)
+                with open(csv_path2, 'r', encoding="ISO-8859-1") as file2:
+                    f2 = csv.reader(file2)
+                    file2.seek(0)
+                    file2.seek(single_result[alias2][0][0])
+                    row2 = next(f2)
+                    v = row2[attrId2]
+                if self.is_number(v):
+                    isNumber2 = 1
+                else:
+                    isNumber2 = 0
+                right_btree = get_small_btree(csv_path2, single_result[alias2], attrId2, isNumber2)
+                if op == '':
+                    for tok in comparison.tokens:
+                        if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                            raw_list = double_join_filter(left_btree, right_btree, tok.value)
+                            break
+                        elif tok.value == '>':
+                            raw_list = double_join_filter(right_btree, left_btree, '<')
+                            index = (alias2, alias1)
+                        elif tok.value == '>=':
+                            raw_list = double_join_filter(right_btree, left_btree, '<=')
+                            index = (alias2, alias1)
+                        else:
+                            pass
+                else:
+                    if op == '+':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_plus(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+                    elif op == '-':
+                        value = -1 * value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_plus(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_plus(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+                    elif op == '*':
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_multi(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
+                    else:
+                        value = 1 / value
+                        for tok in comparison.tokens:
+                            if tok.value == '=' or tok.value == '<' or tok.value == '<=' or tok.value == '<>':
+                                raw_list = double_join_filter_multi(left_btree, right_btree, tok.value, value)
+                                break
+                            elif tok.value == '>':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<', value)
+                                index = (alias2, alias1)
+                            elif tok.value == '>=':
+                                raw_list = double_join_filter_multi(right_btree, left_btree, '<=',value)
+                                index = (alias2, alias1)
+                            else:
+                                pass
         raw_result = [raw_list, index]
         return raw_result
 
 
+    # Find csv name for the corresponding attribute
+    def FindCsvpathandAttrId(self, tok):
+        alias = tok.get_parent_name()
+        csv_path = self.alias_dic[alias]
+        attribute = tok.get_real_name()
+        attrId = getAttrID(csv_path, attribute)
+        return alias, csv_path, attrId
+
+
+    # get Btree file path for the corresponding attribute
+    def getBtree(self, tok, indexpath):
+        alias,csv_path, attrId = self.FindCsvpathandAttrId(tok)
+        csv_name = ntpath.basename(csv_path)
+        btree_path = indexpath + csv_name.split('.')[0] + '_Attr_' + str(attrId) + '_.tree'
+        return btree_path
+
+
+    def is_number(self,s):
+        try:
+            float(s)
+            return True
+        except ValueError:
+            return False
