@@ -20,18 +20,24 @@ class Sql_parsing(object):
         Returns:
             print out query results and count time consuming
          """
-        self.opt = 5000
+        self.opt = 500
         self.sql = sql
         self.parsed = sqlparse.parse(sql)
         self.token_list = self.parsed[0].tokens
         self.alias_dic = {}
-        start = time.time()
+        self.start = time.time()
         csv_list, alias_colume = self.PairCsvandAlias()
         self.indexpath = indexpath
         union = self.Whereparse()
         result = self.getQueryresult(union)
-        query_time = time.time() - start
-        ProjectAndPrint(self.sql, result[0],result[1])
+        query_time = time.time() - self.start
+        with open('review.csv', 'r', encoding="ISO-8859-1") as f:
+            for i in range(len(result[0][0])):
+                f.seek(0)
+                f.seek(result[0][0][i])
+                reader = csv.reader(f)
+                print(next(reader))
+        # ProjectAndPrint(self.sql, result[0],result[1])
         print(query_time)
 
     # the function the parse the SELECT part (before FROM) with sql statement as the input.
@@ -421,6 +427,7 @@ class Sql_parsing(object):
         else:
             alias2, csv_path2, attrId2 = self.FindCsvpathandAttrId(right_part)
         index = (alias1, alias2)
+        print(time.time() - self.start)
         if single_result[alias1] == [[]] and single_result[alias2] == [[]]:
             left_btree = self.getBtree(left_part, self.indexpath)
             if isinstance(right_part, sqlparse.sql.Operation):
@@ -517,7 +524,7 @@ class Sql_parsing(object):
                         pass
         elif single_result[alias1] == [[]]:
             left_btree = self.getBtree(left_part, self.indexpath)
-            if len(single_result[alias2]) < self.opt / 2:
+            if len(single_result[alias2][0]) < self.opt / 2:
                 if op == '':
                     with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
                         f1 = csv.reader(file1)
@@ -668,7 +675,7 @@ class Sql_parsing(object):
                         pass
             else:
                 right_btree = self.getBtree(right_part, self.indexpath)
-            if len(single_result[alias1]) < self.opt / 2:
+            if len(single_result[alias1][0]) < self.opt / 2:
                 if op == '':
                     with open(csv_path2, 'r', encoding="ISO-8859-1") as file2:
                         f2 = csv.reader(file2)
@@ -807,7 +814,7 @@ class Sql_parsing(object):
                             else:
                                 pass
         else:
-            if len(single_result[alias1]) + len(single_result[alias2]) < self.opt:
+            if len(single_result[alias1][0]) + len(single_result[alias2][0]) < self.opt:
                 with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
                     f1 = csv.reader(file1)
                     file1.seek(0)
@@ -867,7 +874,7 @@ class Sql_parsing(object):
                                 break
                             else:
                                 pass
-            elif len(single_result[alias1]) < self.opt / 2:
+            elif len(single_result[alias1][0]) < self.opt / 2:
                 if op == '':
                     with open(csv_path2, 'r', encoding="ISO-8859-1") as file2:
                         f2 = csv.reader(file2)
@@ -927,7 +934,7 @@ class Sql_parsing(object):
                                 break
                             else:
                                 pass
-            elif len(single_result[alias2]) < self.opt / 2:
+            elif len(single_result[alias2][0]) < self.opt / 2:
                 if op == '':
                     with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
                         f1 = csv.reader(file1)

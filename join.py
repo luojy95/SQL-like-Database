@@ -13,7 +13,8 @@ def single_join_filter_one(btree, operator, value):
     Return:
         @ return a two level list. Eg. [[1,2,3,4]], the row list for the single csv.
     '''
-    btree = recoverFromPickle2(btree)
+    if isinstance(btree, str):
+        btree = recoverFromPickle2(btree)
     if operator == '<':
         value_list = list(btree.values(min = btree.minKey(), max = value, excludemax=True))
     elif operator == '<=':
@@ -79,8 +80,9 @@ def double_join_filter(btree1, btree2, operator):
           which corresponds to the row for the first and second csv files. 
           Eg. [[1,2],[2,3],[1,4],...] not [[1,2,3],[4,5,6],...]
     '''
-    btree1 = recoverFromPickle2(btree1)
-    btree2 = recoverFromPickle2(btree2)
+    if isinstance(btree1, str):
+        btree1 = recoverFromPickle2(btree1)
+        btree2 = recoverFromPickle2(btree2)
     list1 = list(btree1.keys())
     list2 = list(btree2.keys())
     i = 0
@@ -179,8 +181,9 @@ def double_join_filter_plus(btree1, btree2, operator, value):
           which corresponds to the row for the first and second csv files. 
           Eg. [[1,2],[2,3],[1,4],...] not [[1,2,3],[4,5,6],...]   
     '''
-    btree1 = recoverFromPickle2(btree1)
-    btree2 = recoverFromPickle2(btree2)
+    if isinstance(btree1, str):
+        btree1 = recoverFromPickle2(btree1)
+        btree2 = recoverFromPickle2(btree2)
     list1 = list(btree1.keys())
     list2 = list(btree2.keys())
     i = 0
@@ -277,8 +280,9 @@ def double_join_filter_multi(btree1, btree2, operator, value):
           which corresponds to the row for the first and second csv files. 
           Eg. [[1,2],[2,3],[1,4],...] not [[1,2,3],[4,5,6],...]    
     '''
-    btree1 = recoverFromPickle2(btree1)
-    btree2 = recoverFromPickle2(btree2)
+    if isinstance(btree1, str):
+        btree1 = recoverFromPickle2(btree1)
+        btree2 = recoverFromPickle2(btree2)
     list1 = list(btree1.keys())
     list2 = list(btree2.keys())
     i = 0
