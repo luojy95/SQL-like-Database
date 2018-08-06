@@ -709,7 +709,6 @@ def btree_A_a_file(btree, path, offsetlist, attr, operator, isNumber):
             else:
                 value = row[attr].upper()
             temp2 = single_join_filter_one(btree, operator, value)
-            print(temp2)
 #            print(temp2)
             if len(temp2[0]) > 0:
                 temp = temp2 + [temp1]
@@ -733,7 +732,6 @@ def btree_A_a_file_plus(btree, path, offsetlist, attr, operator, val):
             temp1 = [offsetlist[0][i]]
             value = float(row[attr]) + val
             temp2 = single_join_filter_one(btree, operator, value)
-            print(temp2)
 #            print(temp2)
             if len(temp2[0]) > 0:
                 temp = temp2 + [temp1]
@@ -757,7 +755,6 @@ def btree_A_a_file_multi(btree, path, offsetlist, attr, operator, val):
             temp1 = [offsetlist[0][i]]
             value = float(row[attr]) * val
             temp2 = single_join_filter_one(btree, operator, value)
-            print(temp2)
 #            print(temp2)
             if len(temp2[0]) > 0:
                 temp = temp2 + [temp1]

@@ -31,13 +31,14 @@ class Sql_parsing(object):
         union = self.Whereparse()
         result = self.getQueryresult(union)
         query_time = time.time() - self.start
-        with open('review.csv', 'r', encoding="ISO-8859-1") as f:
-            for i in range(len(result[0][0])):
-                f.seek(0)
-                f.seek(result[0][0][i])
-                reader = csv.reader(f)
-                print(next(reader))
-        # ProjectAndPrint(self.sql, result[0],result[1])
+        # with open('review.csv', 'r', encoding="ISO-8859-1") as f:
+        #     for i in range(len(result[0][0])):
+        #         f.seek(0)
+        #         f.seek(result[0][0][i])
+        #         reader = csv.reader(f)
+        #         print(next(reader))
+        ProjectAndPrint(self.sql, result[0],result[1])
+        print('There are totally ' + str(len(result[0][0])) + ' records found')
         print(query_time)
 
     # the function the parse the SELECT part (before FROM) with sql statement as the input.
@@ -376,9 +377,11 @@ class Sql_parsing(object):
                     for b in table_list:
                         if a != b:
                             JJ_cond[(a,b)] =[]
+                # print(time.time() - self.start)
                 for j in join_cond:
                     raw_result = self.TransJoincomp(j, single_result)
                     JJ_cond[raw_result[1]].append(raw_result[0])
+                    # print(time.time() - self.start)
                 join_result = self.getJJQuery(JJ_cond,table_list)
                 final_join_result = self.getFinalJoinResults(join_result)
                 if len(and_sum) == 0:
@@ -427,8 +430,7 @@ class Sql_parsing(object):
         else:
             alias2, csv_path2, attrId2 = self.FindCsvpathandAttrId(right_part)
         index = (alias1, alias2)
-        print(time.time() - self.start)
-        if single_result[alias1] == [[]] and single_result[alias2] == [[]]:
+        if single_result[alias1] == [] and single_result[alias2] == []:
             left_btree = self.getBtree(left_part, self.indexpath)
             if isinstance(right_part, sqlparse.sql.Operation):
                 right_btree = ''
@@ -522,16 +524,16 @@ class Sql_parsing(object):
                         break
                     else:
                         pass
-        elif single_result[alias1] == [[]]:
+        elif single_result[alias1] == []:
             left_btree = self.getBtree(left_part, self.indexpath)
             if len(single_result[alias2][0]) < self.opt / 2:
                 if op == '':
-                    with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
-                        f1 = csv.reader(file1)
-                        file1.seek(0)
-                        file1.seek(single_result[alias1][0][0])
-                        row1 = next(f1)
-                        v = row1[attrId1]
+                    with open(csv_path2, 'r', encoding="ISO-8859-1") as file2:
+                        f2 = csv.reader(file2)
+                        file2.seek(0)
+                        file2.seek(single_result[alias2][0][0])
+                        row2 = next(f2)
+                        v = row2[attrId2]
                     if self.is_number(v):
                         isNumber = 1
                     else:
@@ -663,7 +665,7 @@ class Sql_parsing(object):
                                 index = (alias2, alias1)
                             else:
                                 pass
-        elif single_result[alias2] == [[]]:
+        elif single_result[alias2] == []:
             if isinstance(right_part, sqlparse.sql.Operation):
                 right_btree = ''
                 tok_list = right_part.tokens
@@ -677,12 +679,12 @@ class Sql_parsing(object):
                 right_btree = self.getBtree(right_part, self.indexpath)
             if len(single_result[alias1][0]) < self.opt / 2:
                 if op == '':
-                    with open(csv_path2, 'r', encoding="ISO-8859-1") as file2:
-                        f2 = csv.reader(file2)
-                        file2.seek(0)
-                        file2.seek(single_result[alias2][0][0])
-                        row2 = next(f2)
-                        v = row2[attrId2]
+                    with open(csv_path1, 'r', encoding="ISO-8859-1") as file1:
+                        f1 = csv.reader(file1)
+                        file1.seek(0)
+                        file1.seek(single_result[alias1][0][0])
+                        row1 = next(f1)
+                        v = row1[attrId1]
                     if self.is_number(v):
                         isNumber = 1
                     else:
