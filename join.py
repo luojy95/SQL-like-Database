@@ -891,7 +891,7 @@ def get_small_btree(path, offsetlist, attr, isNumber):
             else:
                 # create a list that store the row index w.r.t the tuple
                 dict[key] = [offsetlist[0][i]]
-    sys.setrecursionlimit(10000)
+    sys.setrecursionlimit(1000)
     t = OOBTree()
     t.update(dict)
     return t

@@ -20,7 +20,7 @@ def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path, return_tree):
     Returns:
         None
     """
-    sys.setrecursionlimit(10000)
+    sys.setrecursionlimit(1000)
     t = OOBTree()
     t.update(dictAttr)
     os.makedirs(file_path, exist_ok=True)
