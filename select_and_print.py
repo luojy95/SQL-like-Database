@@ -47,7 +47,7 @@ def printlist(list_name):
     for i, row in enumerate(list_name):
         r = []
         for s in row:
-            r.append(s.encode('utf-8'))
+            r.append(s)
         print(r)
 
 
