@@ -1,9 +1,7 @@
 import sqlparse
-from myCSV import *
 import ntpath
 from join import *
 from select_and_print import ProjectAndPrint
-import time
 import csv
 
 class Sql_parsing(object):
@@ -25,21 +23,24 @@ class Sql_parsing(object):
         self.parsed = sqlparse.parse(sql)
         self.token_list = self.parsed[0].tokens
         self.alias_dic = {}
-        self.start = time.time()
         csv_list, alias_colume = self.PairCsvandAlias()
         self.indexpath = indexpath
         union = self.Whereparse()
         result = self.getQueryresult(union)
-        query_time = time.time() - self.start
+        if result == -1:
+            self.fin_attributes = []
+            self.fin_result = []
+        else:
+            self.fin_attributes, self.fin_result = ProjectAndPrint(self.sql, result[0], result[1])
         # with open('review.csv', 'r', encoding="ISO-8859-1") as f:
         #     for i in range(len(result[0][0])):
         #         f.seek(0)
         #         f.seek(result[0][0][i])
         #         reader = csv.reader(f)
         #         print(next(reader))
-        ProjectAndPrint(self.sql, result[0],result[1])
-        print('There are totally ' + str(len(result[0][0])) + ' records found')
-        print(query_time)
+
+    def get_result(self):
+        return self.fin_attributes, self.fin_result
 
     # the function the parse the SELECT part (before FROM) with sql statement as the input.
     # If the SELECT is not *, the outpub is a list of alias (can be None is no alias provided)
@@ -372,6 +373,9 @@ class Sql_parsing(object):
             for andC in union:
                 table_list, single_cond_dic, join_cond = self.Classify_conditions(andC)
                 single_result = self.getSingleTableQuery(table_list, single_cond_dic)
+                for k, v in single_result.items():
+                    if v == [[]]:
+                        return -1
                 JJ_cond = {}
                 for a in table_list:
                     for b in table_list:
@@ -379,9 +383,13 @@ class Sql_parsing(object):
                             JJ_cond[(a,b)] =[]
                 for j in join_cond:
                     raw_result = self.TransJoincomp(j, single_result)
+                    if raw_result[0] == []:
+                        return -1
                     JJ_cond[raw_result[1]].append(raw_result[0])
                 join_result = self.getJJQuery(JJ_cond,table_list)
                 final_join_result = self.getFinalJoinResults(join_result)
+                if final_join_result[0] == []:
+                    return -1
                 if len(and_sum) == 0:
                     and_sum = final_join_result[0]
                     and_sum_ind = final_join_result[1]

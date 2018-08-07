@@ -29,13 +29,14 @@ def ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_
 	#sql_statement: the statement of sql query
 	#rowindice_result_from_selection: the 2-level list of row indice with sequence corresponding to the alias_index_result
 	#alas_index_result: the list of alias, should be the same sequence corresponding to the rowindice_result_from_selection
-	print("start the final projection and printing")
+	#print("start the final projection and printing")
 	matched_rowindice_lists = MatchIndicewithAliasAttribute(sql_statement, rowindice_result_from_selection, alias_index_result)
 	pro_csv_names, pro_alias_names, pro_attribute_names = ProjectCsvandAlias(sql_statement)
 	fin_attributes, fin_result = FindValueinMultipleCsv(pro_csv_names, matched_rowindice_lists, pro_attribute_names)
-	print("---------------------the result of query is as followed:-----------------------")
-	print(fin_attributes)
-	printlist(fin_result)
+	return fin_attributes,fin_result
+	# print("---------------------the result of query is as followed:-----------------------")
+	# print(fin_attributes)
+	# printlist(fin_result)
 	# pr = PrettyTable(fin_attributes)
 	# for i, row in enumerate(fin_result):
 	# 	pr.add_row(row)
@@ -45,10 +46,7 @@ def ProjectAndPrint(sql_statement, rowindice_result_from_selection, alias_index_
 # the function to print the final table line by line, list_name is the statement representing the final table
 def printlist(list_name):
     for i, row in enumerate(list_name):
-        r = []
-        for s in row:
-            r.append(s)
-        print(r)
+        print(row)
 
 
 # the function the parse the SELECT part (before FROM) with sql statement as the input. If the SELECT is not *, the outpub is a list of alias (can be None is no alias provided) and a list of the corresponding attribute. If the SELECT is *, will return alias_list as [None] and attribute list as [-1], this * statement will be check again when pull out tuple and attribute from the csv document again. The sequence is determined by the appearance in the SELECT part.
@@ -196,8 +194,8 @@ def Findvalueincsv(filename, row_indice, volume_value_list):
 			#if k == row_indice[len(row_indice)-1]:
 			#	break
 
-		if volume_index == [] or value_result == []:
-			print("error: cannot find attribute in csv with referenced name or with the row indice")
+		# if volume_index == [] or value_result == []:
+		# 	print("error: cannot find attribute in csv with referenced name or with the row indice")
 		#print(volume_value_list)
 		attribute_name_tuple = tuple(attribute_name_list)
 	return attribute_name_tuple, value_result
@@ -286,13 +284,14 @@ def FindValueinMultipleCsv(csv_list, tuplelist_for_csvs, attribute_list):
 	final_attributelist = []
 	separate_attribute=[]
 	separate_result = []
-	for i, file in enumerate(csv_list):
-		separate_attribute, separate_result = Findvalueincsv_offset(file, tuplelist_for_csvs[i], [attribute_list[i]])
-		final_attributelist += separate_attribute
-		if final_result == []:
-			final_result = separate_result
-		else:
-			final_result = [final_result[n] + separate_result[n] for n in range(len(separate_result))]
+	if tuplelist_for_csvs != []:
+		for i, file in enumerate(csv_list):
+			separate_attribute, separate_result = Findvalueincsv_offset(file, tuplelist_for_csvs[i], [attribute_list[i]])
+			final_attributelist += separate_attribute
+			if final_result == []:
+				final_result = separate_result
+			else:
+				final_result = [final_result[n] + separate_result[n] for n in range(len(separate_result))]
 	return final_attributelist, final_result
 
 

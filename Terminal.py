@@ -4,7 +4,9 @@ from myCSV import *
 from index_management import buildTreeForSingleAttr
 import ntpath
 from SQLparse import Sql_parsing
-
+from split import my_seperater
+from select_and_print import PairCsvandAlias
+import time
 
 def main():
     parser = OptionParser()
@@ -15,8 +17,13 @@ def main():
     (options, args) = parser.parse_args()
     # Decide how many csv files the program need to read
     if options.filepath is not None:
+        limit = 200000
         CSVfile = []
         CSVfile.append(options.filepath)
+        CSV_split = {}
+        # CSV_split['revieww.csv'] = 6
+        # CSV_split['business.csv'] = 1
+        # CSV_split['photoss.csv'] = 1
         if len(args) > 0:
             for a in args:
                 CSVfile.append(a)
@@ -38,15 +45,24 @@ def main():
     # Show different options
     while True:
         selectionString = "\nChoose an option:\n" \
-                              "\t1.	Build index\n" \
-                              "\t2.	Run Query\n" \
-                              "\t3.	Exit\n"
+                          "\t1.	Preprocess\n" \
+                          "\t2.	Build index\n" \
+                          "\t3.	Run Query\n" \
+                          "\t4.	Exit\n"
 
         try:
             selection = int(input(selectionString))
         except:
             selection = 0
         if selection == 1:
+            print('Preprocessing...')
+            for f in CSVfile:
+                if countRowNumber(f) > limit:
+                    split_num = my_seperater(limit,f)
+                    CSV_split[f] = split_num
+                else:
+                    CSV_split[f] = 1
+        elif selection == 2:
             # Build Btrees for the input attribute
             ind = input("Build index for:\n")
             Attribs= ind.split(" ")
@@ -57,19 +73,68 @@ def main():
                 print("Fail to build index")
             else:
                 if Attribs[2] == 'y':
-                    buildTreeForSingleAttr(filename, filepath, options.indexpath, AttrId, return_tree=False, isNumber=True)
+                    if CSV_split[filename] ==1:
+                        buildTreeForSingleAttr(filename, filepath, options.indexpath, AttrId, return_tree=False,
+                                               isNumber=True)
+                    else:
+                        for i in range(CSV_split[filename]):
+                            f = filename.split('.')[0] + '_split_' + str(i) + '.csv'
+                            fp = f
+                            buildTreeForSingleAttr(f, fp, options.indexpath, AttrId, return_tree=False,
+                                                   isNumber=True)
                 else:
-                    buildTreeForSingleAttr(filename, filepath, options.indexpath, AttrId, return_tree=False, isNumber=False)
+                    if CSV_split[filename] ==1:
+                        buildTreeForSingleAttr(filename, filepath, options.indexpath, AttrId, return_tree=False,
+                                               isNumber=False)
+                    else:
+                        for i in range(CSV_split[filename]):
+                            f = filename.split('.')[0] + '_split_' + str(i) + '.csv'
+                            fp = f
+                            buildTreeForSingleAttr(f, fp, options.indexpath, AttrId, return_tree=False,
+                                                   isNumber=False)
                 print("Index for " + Attribs[1] + " build successfully")
-        elif selection == 2:
+        elif selection == 3:
             # Execute Query
             sql = input("Input SQL Command:\n")
-            S = Sql_parsing(sql, options.indexpath)
-        elif selection == 3:
+            sqlist =splitSQL(sql, CSV_split)
+            fin_result = []
+            start = time.time()
+            attrlist = []
+            for q in sqlist:
+                attr, result = Sql_parsing(q, options.indexpath).get_result()
+                if attr == []:
+                    pass
+                else:
+                    attrlist = attr
+                fin_result = fin_result + result
+            query_time = time.time() - start
+            print("---------------------the result of query is as followed:-----------------------")
+            print(attrlist)
+            for row in fin_result:
+                print(row)
+            print('There are '+ str(len(fin_result)) + ' records found in total!')
+            print('Finish Query in ' + str(query_time) + ' seconds')
+        elif selection == 4:
             print("Exit!")
             break
         else:
             print("invalid choice")
+
+def splitSQL(sql, CSV_split):
+    sqlist = [sql]
+    csv_used, alias_colume = PairCsvandAlias(sql)
+    for j in range(len(csv_used)):
+        sqlist_new = []
+        if CSV_split[csv_used[j]] > 1:
+            for q in sqlist:
+                for i in range(CSV_split[csv_used[j]]):
+                    q_new = q.replace(csv_used[j]+' '+alias_colume[j], csv_used[j].split('.')[0]
+                                      + '_split_' + str(i) + '.csv '+ alias_colume[j])
+                    sqlist_new.append(q_new)
+            sqlist = sqlist_new
+        else:
+            pass
+    return sqlist
 
 if __name__ == "__main__":
     main()
