@@ -557,7 +557,7 @@ print(time.time() - t1)
 
 
 #
-# fileName_1 = 'review-1m.csv'
+# fileName_1 = 'review.csv'
 # dataFilePath_1 = './data/' + fileName_1
 # filepathBtree_1 = './btree/'
 # fileName_2 = 'business.csv'
@@ -681,47 +681,47 @@ print(time.time() - t1)
 #SELECT B.name, B.city, B.state, R.stars, P.label FROM business.csv B JOIN review-1m.csv R JOIN photos.csv P 
 #ON (B.business_id = R.business_id AND B.business_id = P.business_id) 
 #WHERE B.city = 'Champaign' AND B.state = 'IL' AND R.stars = 5 AND P.label = 'inside'
-#ID1 = getAttrID(dataFilePath_1, 'business_id')
-#btree_rid = buildTreeForSingleAttr(fileName_1, dataFilePath_1, filepathBtree_1, AttrId = ID1, return_tree = True, isNumber = False)
+# ID1 = getAttrID(dataFilePath_1, 'business_id')
+# btree_rid = buildTreeForSingleAttr(fileName_1, dataFilePath_1, filepathBtree_1, AttrId = ID1, return_tree = True, isNumber = False)
 #
-#ID2 = getAttrID(dataFilePath_1, 'stars')
-#btree_rstar = buildTreeForSingleAttr(fileName_1, dataFilePath_1, filepathBtree_1, AttrId = ID2, return_tree = True, isNumber = True)
+# ID2 = getAttrID(dataFilePath_1, 'stars')
+# btree_rstar = buildTreeForSingleAttr(fileName_1, dataFilePath_1, filepathBtree_1, AttrId = ID2, return_tree = True, isNumber = True)
 #
-#ID3 = getAttrID(dataFilePath_2, 'business_id')
-#btree_bid = buildTreeForSingleAttr(fileName_2, dataFilePath_2, filepathBtree_2, AttrId = ID3, return_tree = True, isNumber = False)
+# ID3 = getAttrID(dataFilePath_2, 'business_id')
+# btree_bid = buildTreeForSingleAttr(fileName_2, dataFilePath_2, filepathBtree_2, AttrId = ID3, return_tree = True, isNumber = False)
 #
-#ID4 = getAttrID(dataFilePath_2, 'city')
-#btree_bcity = buildTreeForSingleAttr(fileName_2, dataFilePath_2, filepathBtree_2, AttrId = ID4, return_tree = True, isNumber = False)
+# ID4 = getAttrID(dataFilePath_2, 'city')
+# btree_bcity = buildTreeForSingleAttr(fileName_2, dataFilePath_2, filepathBtree_2, AttrId = ID4, return_tree = True, isNumber = False)
 #
-#ID5 = getAttrID(dataFilePath_2, 'state')
-#btree_bstate = buildTreeForSingleAttr(fileName_2, dataFilePath_2, filepathBtree_2, AttrId = ID5, return_tree = True, isNumber = False)
+# ID5 = getAttrID(dataFilePath_2, 'state')
+# btree_bstate = buildTreeForSingleAttr(fileName_2, dataFilePath_2, filepathBtree_2, AttrId = ID5, return_tree = True, isNumber = False)
 #
-#ID6 = getAttrID(dataFilePath_3, 'business_id')
-#btree_pid = buildTreeForSingleAttr(fileName_3, dataFilePath_3, filepathBtree_3, AttrId = ID6, return_tree = True, isNumber = False)
+# ID6 = getAttrID(dataFilePath_3, 'business_id')
+# btree_pid = buildTreeForSingleAttr(fileName_3, dataFilePath_3, filepathBtree_3, AttrId = ID6, return_tree = True, isNumber = False)
 #
-#ID7 = getAttrID(dataFilePath_3, 'label')
-#btree_plabel = buildTreeForSingleAttr(fileName_3, dataFilePath_3, filepathBtree_3, AttrId = ID7, return_tree = True, isNumber = False)
+# ID7 = getAttrID(dataFilePath_3, 'label')
+# btree_plabel = buildTreeForSingleAttr(fileName_3, dataFilePath_3, filepathBtree_3, AttrId = ID7, return_tree = True, isNumber = False)
 #
-#start = time.time()
-#B1 = single_join_filter_one(btree_bcity,'=','CHAMPAIGN')
-#B2 = single_join_filter_one(btree_bstate,'=','IL')
-#R = single_join_filter_one(btree_rstar,'=',5)
-#P = single_join_filter_one(btree_plabel,'=','INSIDE')
-#B = and_condition_single(B1 + B2)
+# start = time.time()
+# B1 = single_join_filter_one(btree_bcity,'=','CHAMPAIGN')
+# B2 = single_join_filter_one(btree_bstate,'=','IL')
+# R = single_join_filter_one(btree_rstar,'=',5)
+# P = single_join_filter_one(btree_plabel,'=','INSIDE')
+# B = and_condition_single(B1 + B2)
 #
-#btree_small_r = get_small_btree(dataFilePath_1, R, ID1, 0)
-#btree_small_b = get_small_btree(dataFilePath_2, B, ID3, 0)
-#btree_small_p = get_small_btree(dataFilePath_3, P, ID6, 0)
-#BR = double_join_filter(btree_small_b, btree_small_r, '=')
-#BP = double_join_filter(btree_small_b, btree_small_p, '=')
-#br = cross_prod(BR)
-#bp = cross_prod(BP)
-#out1 = and_condition_double(br, bp, 0, 0)
-#out = permute_list(out1)
-##BR = A_a_B_b_file(dataFilePath_2, B, ID2, dataFilePath_1, R, ID1, '=', 0)
-##BP = A_a_B_b_file(dataFilePath_2, B, ID2, dataFilePath_3, P, ID6, '=', 0)
+# btree_small_r = get_small_btree(dataFilePath_1, R, ID1, 0)
+# btree_small_b = get_small_btree(dataFilePath_2, B, ID3, 0)
+# btree_small_p = get_small_btree(dataFilePath_3, P, ID6, 0)
+# BR = double_join_filter(btree_small_b, btree_small_r, '=')
+# BP = double_join_filter(btree_small_b, btree_small_p, '=')
+# br = cross_prod(BR)
+# bp = cross_prod(BP)
+# out1 = and_condition_double(br, bp, 0, 0)
+# out = permute_list(out1)
+# #BR = A_a_B_b_file(dataFilePath_2, B, ID2, dataFilePath_1, R, ID1, '=', 0)
+# #BP = A_a_B_b_file(dataFilePath_2, B, ID2, dataFilePath_3, P, ID6, '=', 0)
 #
-#print(time.time() - start)
+# print(time.time() - start)
 # ==================================================================================================================================#
 
 

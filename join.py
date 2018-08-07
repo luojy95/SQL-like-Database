@@ -82,6 +82,7 @@ def double_join_filter(btree1, btree2, operator):
     '''
     if isinstance(btree1, str):
         btree1 = recoverFromPickle2(btree1)
+    if isinstance(btree2, str):
         btree2 = recoverFromPickle2(btree2)
     list1 = list(btree1.keys())
     list2 = list(btree2.keys())
@@ -183,6 +184,7 @@ def double_join_filter_plus(btree1, btree2, operator, value):
     '''
     if isinstance(btree1, str):
         btree1 = recoverFromPickle2(btree1)
+    if isinstance(btree2, str):
         btree2 = recoverFromPickle2(btree2)
     list1 = list(btree1.keys())
     list2 = list(btree2.keys())
@@ -282,6 +284,7 @@ def double_join_filter_multi(btree1, btree2, operator, value):
     '''
     if isinstance(btree1, str):
         btree1 = recoverFromPickle2(btree1)
+    if isinstance(btree2, str):
         btree2 = recoverFromPickle2(btree2)
     list1 = list(btree1.keys())
     list2 = list(btree2.keys())
@@ -695,7 +698,8 @@ def btree_A_a_file(btree, path, offsetlist, attr, operator, isNumber):
     offsetlist : [[1,2,3]]
     btree < file
     '''
-
+    if isinstance(btree, str):
+        btree = recoverFromPickle2(btree)
     out = []
     with open(path, 'r', encoding="ISO-8859-1") as file:
         f = csv.reader(file)
@@ -721,7 +725,8 @@ def btree_A_a_file_plus(btree, path, offsetlist, attr, operator, val):
     offsetlist : [[1,2,3]]
     btree < file
     '''
-
+    if isinstance(btree, str):
+        btree = recoverFromPickle2(btree)
     out = []
     with open(path, 'r', encoding="ISO-8859-1") as file:
         f = csv.reader(file)
@@ -744,7 +749,8 @@ def btree_A_a_file_multi(btree, path, offsetlist, attr, operator, val):
     offsetlist : [[1,2,3]]
     btree < file
     '''
-
+    if isinstance(btree, str):
+        btree = recoverFromPickle2(btree)
     out = []
     with open(path, 'r', encoding="ISO-8859-1") as file:
         f = csv.reader(file)
@@ -767,7 +773,8 @@ def A_a_btree_file(path, offsetlist, attr, btree, operator, isNumber):
     offsetlist : [[1,2,3]]
     btree < file
     '''
-
+    if isinstance(btree, str):
+        btree = recoverFromPickle2(btree)
     out = []
     with open(path, 'r', encoding="ISO-8859-1") as file:
         f = csv.reader(file)
@@ -803,7 +810,8 @@ def A_a_btree_file_plus(path, offsetlist, attr, btree, operator, val):
     offsetlist : [[1,2,3]]
     btree < file
     '''
-
+    if isinstance(btree, str):
+        btree = recoverFromPickle2(btree)
     out = []
     with open(path, 'r', encoding="ISO-8859-1") as file:
         f = csv.reader(file)
@@ -836,7 +844,8 @@ def A_a_btree_file_multi(path, offsetlist, attr, btree, operator, val):
     offsetlist : [[1,2,3]]
     btree < file
     '''
-
+    if isinstance(btree, str):
+        btree = recoverFromPickle2(btree)
     out = []
     with open(path, 'r', encoding="ISO-8859-1") as file:
         f = csv.reader(file)

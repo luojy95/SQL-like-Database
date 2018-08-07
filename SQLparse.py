@@ -377,11 +377,9 @@ class Sql_parsing(object):
                     for b in table_list:
                         if a != b:
                             JJ_cond[(a,b)] =[]
-                # print(time.time() - self.start)
                 for j in join_cond:
                     raw_result = self.TransJoincomp(j, single_result)
                     JJ_cond[raw_result[1]].append(raw_result[0])
-                    # print(time.time() - self.start)
                 join_result = self.getJJQuery(JJ_cond,table_list)
                 final_join_result = self.getFinalJoinResults(join_result)
                 if len(and_sum) == 0:
