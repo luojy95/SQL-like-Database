@@ -7,6 +7,7 @@ from SQLparse import Sql_parsing
 from split import my_seperater
 from select_and_print import PairCsvandAlias
 import time
+import json
 
 def main():
     parser = OptionParser()
@@ -17,13 +18,9 @@ def main():
     (options, args) = parser.parse_args()
     # Decide how many csv files the program need to read
     if options.filepath is not None:
-        limit = 200000
         CSVfile = []
         CSVfile.append(options.filepath)
         CSV_split = {}
-        # CSV_split['revieww.csv'] = 6
-        # CSV_split['business.csv'] = 1
-        # CSV_split['photoss.csv'] = 1
         if len(args) > 0:
             for a in args:
                 CSVfile.append(a)
@@ -36,6 +33,7 @@ def main():
                 for attr in attrlist:
                     print(attr)
                 print("--------------------------------------\n")
+                CSV_split[f] = 1
             except:
                 print("Fail to read the file")
                 sys.exit(0)
@@ -46,15 +44,16 @@ def main():
     while True:
         selectionString = "\nChoose an option:\n" \
                           "\t1.	Preprocess\n" \
-                          "\t2.	Build index\n" \
-                          "\t3.	Run Query\n" \
-                          "\t4.	Exit\n"
-
+                          "\t2.	Read in total\n" \
+                          "\t3.	Build index\n" \
+                          "\t4.	Run Query\n" \
+                          "\t5.	Exit\n"
         try:
             selection = int(input(selectionString))
         except:
             selection = 0
         if selection == 1:
+            limit = int(input("Input the split limit:\n"))
             print('Preprocessing...')
             for f in CSVfile:
                 if countRowNumber(f) > limit:
@@ -62,8 +61,14 @@ def main():
                     CSV_split[f] = split_num
                 else:
                     CSV_split[f] = 1
+                json.dump(CSV_split, open('CSV_split', 'w'))
         elif selection == 2:
+            for f in CSVfile:
+                CSV_split[f] = 1
+            json.dump(CSV_split, open('CSV_split', 'w'))
+        elif selection == 3:
             # Build Btrees for the input attribute
+            CSV_split = json.load(open('CSV_split'))
             ind = input("Build index for:\n")
             Attribs= ind.split(" ")
             filepath = Attribs[0]
@@ -93,7 +98,7 @@ def main():
                             buildTreeForSingleAttr(f, fp, options.indexpath, AttrId, return_tree=False,
                                                    isNumber=False)
                 print("Index for " + Attribs[1] + " build successfully")
-        elif selection == 3:
+        elif selection == 4:
             # Execute Query
             sql = input("Input SQL Command:\n")
             sqlist =splitSQL(sql, CSV_split)
@@ -114,7 +119,7 @@ def main():
                 print(row)
             print('There are '+ str(len(fin_result)) + ' records found in total!')
             print('Finish Query in ' + str(query_time) + ' seconds')
-        elif selection == 4:
+        elif selection == 5:
             print("Exit!")
             break
         else:

@@ -116,8 +116,8 @@ def ProjectCsvandAlias(sql):
 		for k, csv_name in enumerate(pair_alias):
 			if csv_name == j:
 				project_csv_name.append(pair_csv[k])
-	if project_csv_name == []:
-		print("error: require alias for SELECT as the final table is from multiple CSVs")
+	# if project_csv_name == []:
+	# 	print("error: require alias for SELECT as the final table is from multiple CSVs")
 	return project_csv_name, project_alias_name, project_attribute_name
 
 def Findcsvname(alias):
@@ -143,13 +143,14 @@ def MatchIndicewithAliasAttribute(sql, rowindice_result_from_selection, alias_in
 	f_csv_names, f_alias_names = PairCsvandAlias(sql)
 	matched_rowindice_lists = []
 	if len(f_csv_names) != len(rowindice_result_from_selection):
-		print("no selection result matched the conditions or error: the row indice list after selection is incorrect")
+		pass
+		# print("no selection result matched the conditions or error: the row indice list after selection is incorrect")
 	else:
 		for i, csaname in enumerate(p_alias_names):
 			i_in_f = alias_index_from_result.index(csaname)
 			matched_rowindice_lists.append(rowindice_result_from_selection[i_in_f])
-	if matched_rowindice_lists == []:
-		print("no selection result matched the conditions or error with indice")
+	# if matched_rowindice_lists == []:
+	# 	print("no selection result matched the conditions or error with indice")
 	return matched_rowindice_lists
 
 # just to check if all element in a list is the same
@@ -236,8 +237,8 @@ def Findvalueincsv_offset(filename, row_offset, volume_value_list):
 					#value_result.append(row_list[h])
 				# else:
 				# 	value_result[j] = ('Null',)
-		if volume_index == [] or value_result == []:
-			print("error: cannot find attribute in csv with referenced name or with the row indice")
+		# if volume_index == [] or value_result == []:
+		# 	print("error: cannot find attribute in csv with referenced name or with the row indice")
 		# print(volume_value_list)
 		attribute_name_tuple = tuple(attribute_name_list)
 	return attribute_name_tuple, value_result
