@@ -4,8 +4,6 @@ import os
 import sys
 from myCSV import *
 import _pickle as cPickle
-# import ubjson
-import gzip
 
 
 def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path, return_tree):
@@ -13,7 +11,7 @@ def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path, return_tree):
     This funciton accepts a dctionary dictAttr, build an OOBtree, store the value in OOBTree and then
     dump the Btree object into a file with name defined as fileName + _Attr_ + attrIndx + _.tree
     Args:
-        dictAttr: a dictionary that store the (attribute, row index set) pair
+        dictAttr: a dictionary that store the (attribute, offset set) pair
         fileName: csvfile name without '.csv'
         attrIndx: index of attribute
         file_path: path to store the btree file
@@ -28,8 +26,6 @@ def buildTreeForAttr(dictAttr, fileName, attrIndx, file_path, return_tree):
         cPickle.dump(t, f)
     if return_tree:
         return t
-    # with gzip.open(file_path + fileName + '_Attr_' + str(attrIndx) + '_.tree', "wb") as f:
-    #     ubjson.dump(t, f)
 
 def recoverFromPickle(BtreefileName, file_path):
     """
@@ -38,14 +34,12 @@ def recoverFromPickle(BtreefileName, file_path):
         BtreefileName: '.tree' file that store the btree file
         file_path: path to store the btree file
     Returns:
-        btree: object that use attribute value as key, row index set as value
+        btree: object that use attribute value as key, offset set as value
     """
     with open(file_path + BtreefileName, 'rb') as f:
         btree = cPickle.load(f, encoding='bytes')
         return btree
-    # with gzip.open(file_path + BtreefileName, 'rb') as f:
-    #     btree = ubjson.load(f)
-    #     return btree
+
 
 def recoverFromPickle2(Btreefilepath):
     """
@@ -53,11 +47,8 @@ def recoverFromPickle2(Btreefilepath):
     Args:
         Btreefilepath: path to '.tree' file that store the btree file
     Returns:
-        btree: object that use attribute value as key, row index set as value
+        btree: object that use attribute value as key, offset set as value
     """
     with open(Btreefilepath, 'rb') as f:
         btree = cPickle.load(f, encoding='bytes')
         return btree
-    # with gzip.open(file_path + BtreefileName, 'rb') as f:
-    #     btree = ubjson.load(f)
-    #     return btree
