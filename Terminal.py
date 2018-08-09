@@ -4,7 +4,7 @@ from myCSV import *
 from index_management import buildTreeForSingleAttr
 import ntpath
 from SQLparse import Sql_parsing
-from split import my_seperater
+from seperater import my_seperater
 from select_and_print import PairCsvandAlias
 import time
 import json
@@ -100,6 +100,7 @@ def main():
                 print("Index for " + Attribs[1] + " build successfully")
         elif selection == 4:
             # Execute Query
+            CSV_split = json.load(open('CSV_split'))
             sql = input("Input SQL Command:\n")
             sqlist =splitSQL(sql, CSV_split)
             fin_result = []
