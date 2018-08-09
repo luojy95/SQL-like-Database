@@ -41,8 +41,8 @@ The code will display the attributes for the selected file, and then prompt the 
 \3. Build in index, build index for selected attribute, in the format of csv file name, attribute name, y/n(is numeric or not)
    for example, review.csv funny y
    
-\4. Run query, 
-  Query example:
+\4. Run query, query example:
+  
   Q1: SELECT R.review_id, R.funny, R.useful FROM review.csv R WHERE R.funny >= 20 AND R.useful > 30
   
   Q2: SELECT B.name, B.city, B.state FROM business.csv B WHERE B.city = 'Champaign' AND B.state = 'IL'
