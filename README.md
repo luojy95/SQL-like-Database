@@ -1,7 +1,7 @@
 # CS411_Track2_CSV_plus
 
-This directory contains code of our database system, which is designed to handle sql-like queries, 
-i.e., SELECT-FROM-WHERE.
+This directory contains code of our database system, which is designed to handle sql-like queries, \n
+i.e., SELECT-FROM-WHERE.\n
 -------------------------------------------------------------------------------
 SQLparse.py: parse SQL input, optimize query and output query result.
 Terminal.py: include user interface that allow users to Preprocess, Build index, run query, etc.
@@ -22,6 +22,7 @@ The code will display the attributes for the selected file, and then prompt the 
 3. Build index
 4. Run Query
 5. Exit
+
 
 \1. Preprocess, split the CSV file
 \2. Read in total, use CSV file without split
