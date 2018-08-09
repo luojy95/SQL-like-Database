@@ -1,4 +1,4 @@
-# CSV_plus
+# DB_jzlx_plus
 
 This directory contains code of our database system, which is designed to handle sql-like queries, 
 i.e., SELECT-FROM-WHERE.
