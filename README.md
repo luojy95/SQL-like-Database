@@ -2,7 +2,7 @@
 
 This directory contains code of our database system, which is designed to handle sql-like queries, \n
 i.e., SELECT-FROM-WHERE.\n
--------------------------------------------------------------------------------
+
 SQLparse.py: parse SQL input, optimize query and output query result.
 Terminal.py: include user interface that allow users to Preprocess, Build index, run query, etc.
 index_management.py: build dictionary for btree
@@ -10,7 +10,7 @@ join.py: implementation of different join functions
 myCSV.py: load, preprocess, and preprocess CSV function
 mybtree.py: build, load and store btree
 select_and_print.py: print and output result of query
--------------------------------------------------------------------------------
+
 How to use this system
 
 run Terminal.py in terminal to start, -f for file name, -p for path that stores the Btree file
