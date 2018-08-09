@@ -1,9 +1,15 @@
 import csv
 
 def my_seperater(split_limit, origin_file):
-    #split_limit = 3000
-    #filehandler = 'oscars.csv'
-    #ct = my_seperater(split_limit, filehandler)
+    """
+    This funciton accepts a CSV file and an integer split_limit, split the CSV file into several small CSV files 
+    with split_limit as the maximum number of tuples in each CSV file
+    Args:
+        split_limit: maximum number of tuples in each CSV file
+        origin_file: file name of original file
+    Returns:
+        count_file: an Integer indicates the number of files splitted from origin_file
+    """
 
     current_limit = split_limit
     with open(origin_file, 'r', encoding="ISO-8859-1") as f:
