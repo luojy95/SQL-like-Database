@@ -5,14 +5,14 @@ from myCSV import *
 from mybtree import *
     
 def single_join_filter_one(btree, operator, value):
-    '''
+    """
     Inputs:
         @ btree: the btree that corresponds to the attribute will be compared
         @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
         @ value: Rvalue
     Return:
         @ return a two level list. Eg. [[1,2,3,4]], the row list for the single csv.
-    '''
+    """
     if isinstance(btree, str):
         btree = recoverFromPickle2(btree)
     if operator == '<':
@@ -46,9 +46,9 @@ def single_join_filter_one(btree, operator, value):
     return [output]
 
 # def single_join_filter_more(btree_list, operator_list, value_list):
-    '''
+    """
     Uncommend if necessary.
-    '''
+    """
     # attr_list = getAttrList(filepathBtree + btreeFile_list[0])
     # btree = recoverFromPickle(btreeFile_list[0], filepathBtree)
     # key_list = list(btree.keys())
@@ -68,7 +68,7 @@ def single_join_filter_one(btree, operator, value):
     # return output
 
 def double_join_filter(btree1, btree2, operator):
-    '''
+    """
     Inputs:
         @ btree1: the btree that corresponds to the attribute in the first csv file that will be compared.
           Can be any comparable type.
@@ -76,10 +76,11 @@ def double_join_filter(btree1, btree2, operator):
           Can be any comparable type.
         @ operator: Three operators supported: '<', '<=', '=', '<>' (Symmetric)
     Return:
-        @ return a two level list. Inner level must be of length 2, 
-          which corresponds to the row for the first and second csv files. 
-          Eg. [[1,2],[2,3],[1,4],...] not [[1,2,3],[4,5,6],...]
-    '''
+        @ return a three level list. out = Eg. [[[1,2],[2,3]],[[1],[4,1,2]],...].
+          Second level must be of length 2, which corresponds to the row for the first and second csv files.
+          For the inner two level list, do a cartesian production between out[i][0] and out[i][1] to get the
+          corresponding offset in the first and second file.
+    """
     if isinstance(btree1, str):
         btree1 = recoverFromPickle2(btree1)
     if isinstance(btree2, str):
@@ -169,19 +170,19 @@ def double_join_filter(btree1, btree2, operator):
 #    return list_row
 
 def double_join_filter_plus(btree1, btree2, operator, value):
-    '''
+    """
     Inputs:
         @ btree1: the btree that corresponds to the attribute in the first csv file that will be compared.
-          Must be double or int type.
+          Can be any comparable type.
         @ btree2: the btree that corresponds to the attribute in the second csv file that will be compared.
-          Must be double or int type.
+          Can be any comparable type.
         @ operator: Three operators supported: '<', '<=', '=', '<>' (Symmetric)
-        @ value: the value that will be added to the right side of the equation.
     Return:
-        @ return a two level list. Inner level must be of length 2, 
-          which corresponds to the row for the first and second csv files. 
-          Eg. [[1,2],[2,3],[1,4],...] not [[1,2,3],[4,5,6],...]   
-    '''
+        @ return a three level list. out = Eg. [[[1,2],[2,3]],[[1],[4,1,2]],...].
+          Second level must be of length 2, which corresponds to the row for the first and second csv files.
+          For the inner two level list, do a cartesian production between out[i][0] and out[i][1] to get the
+          corresponding offset in the first and second file.
+    """
     if isinstance(btree1, str):
         btree1 = recoverFromPickle2(btree1)
     if isinstance(btree2, str):
@@ -269,7 +270,7 @@ def double_join_filter_plus(btree1, btree2, operator, value):
 #    return list_row
 
 def double_join_filter_multi(btree1, btree2, operator, value):
-    '''
+    """
     Inputs:
         @ btree1: the btree that corresponds to the attribute in the first csv file that will be compared.
           Must be double or int type.
@@ -281,7 +282,7 @@ def double_join_filter_multi(btree1, btree2, operator, value):
         @ return a two level list. Inner level must be of length 2, 
           which corresponds to the row for the first and second csv files. 
           Eg. [[1,2],[2,3],[1,4],...] not [[1,2,3],[4,5,6],...]    
-    '''
+    """
     if isinstance(btree1, str):
         btree1 = recoverFromPickle2(btree1)
     if isinstance(btree2, str):
@@ -367,7 +368,7 @@ def double_join_filter_multi(btree1, btree2, operator, value):
 #    return list_row
 
 def and_condition_single(list_row_list):
-    '''
+    """
     Inputs:
         @ list_row_list: list of different outputs from the above single join 
           function for one same csv different attributes. Eg: [[1,2,4,5],[4,5,7,8,9,11]]
@@ -376,14 +377,14 @@ def and_condition_single(list_row_list):
         @ Implement the AND condition for different row lists for the same csv file.
     Return:
         @ return a two level list the same as single join function. like [[4,5]]     
-    '''
+    """
     output = list_row_list[0]
     for i in range(len(list_row_list)):
         output = set(list_row_list[i]).intersection(output)
     return [list(output)]
 
 def or_condition_single(list_row_list):
-    '''
+    """
     Inputs:
         @ list_row_list: list of different outputs from the above single join 
           function for one same csv different attributes. Eg: [[1,2,4,5],[4,5,7,8,9,11]]
@@ -392,14 +393,14 @@ def or_condition_single(list_row_list):
         @ Implement the OR condition for different row lists for the same csv file.
     Return:
         @ return a two level list the same as single join function. like [[4,5]]     
-    '''
+    """
     output = list_row_list[0]
     for i in range(len(list_row_list)):
         output = set(list_row_list[i]).union(output)
     return [list(output)]  
 
 def except_condition_single(list_row_list):
-    '''
+    """
     Inputs:
         @ list_row_list: list of different outputs from the above single join 
           function for one same csv different attributes. Eg: [[1,2,4,5],[4,5,7,8,9,11]]
@@ -409,12 +410,12 @@ def except_condition_single(list_row_list):
         @ The length of the list_row_list must be two. Item[0] except item[1].
     Return:
         @ return a two level list the same as single join function. like [[4,5]]     
-    '''
+    """
     output = set(list_row_list[0]).difference(list_row_list[1])
     return [list(output)]  
 
 def and_condition_double(list_row_list1, list_row_list2, id1, id2):
-    '''
+    """
     Inputs:
         @ list_row_list1: output from the above double join functions or from this function.
           Eg.:[[1,3],[2,5],[5,6]](orginal output from double join functions) 
@@ -432,7 +433,7 @@ def and_condition_double(list_row_list1, list_row_list2, id1, id2):
           necessary to be of length 2. 
         @ Each item in output should be the same length list. 
           Eg.:[[1,2,3,4],[1,3,4,5],[5,6,7,9]] corresponding to 4 different csv files A,B,C,D
-    '''
+    """
     output = []
     for i in range(len(list_row_list1)):
         for j in range(len(list_row_list2)):
@@ -442,7 +443,7 @@ def and_condition_double(list_row_list1, list_row_list2, id1, id2):
     return output
 
 def permute_list(list_row_list):
-    '''
+    """
     Inputs:
         @ list_row_list: output from the above double join functions or from and_condition_double function.
           Eg.:[[1,3],[2,5],[5,6]](orginal output from double join functions) 
@@ -454,7 +455,7 @@ def permute_list(list_row_list):
     @ Eg. Input: [[1,2,4], [2,6,5]]
           Output: [[1,2], [2,6], [4,5]] --- Each item is for one csv file. 
                                             
-    '''
+    """
     output = []
     if len(list_row_list) == 0:
         return output
@@ -466,18 +467,22 @@ def permute_list(list_row_list):
     return output
 
 def single_to_double(list_row):
-    '''
+    """
     
-    '''
+    """
     output = []
     for i in range(len(list_row[0])):
         output = output + [[list_row[0][i]]]
     return output
 
 def cross_prod(row_list):
-    '''
-    
-    '''
+    """
+    Inputs:
+        @ row_list: A three level list: Eg.: [[[1,2],[2,3]],[[1],[4,1,2]],...]
+    Return:
+        @ return a two level list after doing a cartesian production between each item (two level list)
+          in the original three level list. Eg. [[1, 2], [1, 3], [2, 2], [2, 3], [1, 4], [1, 1], [1, 2]]
+     """
 #    row_list = [[btree1[item[0]], btree2[item[1]]] for item in output]
     
     list_row = []
@@ -487,9 +492,20 @@ def cross_prod(row_list):
     return list_row
 
 def A_AB_B_and(A, AB, B):
-    '''
-    
-    '''
+    """
+    This is a filter function to shrink the join result before cartesian production
+    Inputs:
+        @ A: a two level list which can be the output from single_join_filter_one,
+          and_condition_single, or_condition_single and except_condition_single.
+          Eg.: [[2,3,4,5,6]]
+        @ B: Same as A
+        @ AB: a three level list which can be the output from double_join_filter function sets
+          and other filter function. A and B should at the corresponding location, which means
+          the input should be like A_AB_B(A, AB, B) or A_AB_B(B, BA, A).
+    Return:
+        @ The same structure as input AB, in order to make the filter operation a closure.
+          The sequence of the corresponding csv files is still AB'.
+    """
     output = []
     for i in range(len(AB)):
         temp1 = and_condition_single([AB[i][0]] + A)
@@ -499,9 +515,20 @@ def A_AB_B_and(A, AB, B):
     return output
 
 def A_AB_and(A, AB, id):
-    '''
-    
-    '''
+    """
+    This is a filter function to shrink the join result before cartesian production
+    Inputs:
+        @ A: a two level list which can be the output from single_join_filter_one,
+          and_condition_single, or_condition_single and except_condition_single.
+          Eg.: [[2,3,4,5,6]]
+        @ AB: a three level list which can be the output from double_join_filter function sets
+          and other filter function.
+        @ id: the order of the input file, if the input file is (AB and A) or (BA and B), id should
+          be 0, otherwise 1.
+    Return:
+        @ The same structure as input AB, in order to make the filter operation a closure.
+          The sequence of the corresponding csv files is still AB'.
+    """
     output = []
     for i in range(len(AB)):
 #        print([AB[i][id]] + A)
@@ -516,9 +543,20 @@ def A_AB_and(A, AB, id):
 
 
 def A_AB_B_or(A, AB, B):
-    '''
-    
-    '''
+    """
+    This is a filter function to shrink the join result before cartesian production
+    Inputs:
+        @ A: a two level list which can be the output from single_join_filter_one,
+          and_condition_single, or_condition_single and except_condition_single.
+          Eg.: [[2,3,4,5,6]]
+        @ B: Same as A
+        @ AB: a three level list which can be the output from double_join_filter function sets
+          and other filter function. A and B should at the corresponding location, which means
+          the input should be like A_AB_B(A, AB, B) or A_AB_B(B, BA, A).
+    Return:
+        @ The same structure as input AB, in order to make the filter operation a closure.
+          The sequence of the corresponding csv files is still AB'.
+    """
     output = []
     for i in range(len(AB)):
         temp1 = or_condition_single([AB[i][0]] + A)
@@ -528,9 +566,16 @@ def A_AB_B_or(A, AB, B):
     return output
 
 def AB_AB(AB1, AB2, id):
-    '''
-    
-    '''
+    """
+    This is NOT a filter function. This is a join function which will only return one result.
+    Inputs:
+        @ AB1: a two level list which can only be the cross_prod and AB_AB output.
+          Eg.: [[1, 2], [1, 3], [2, 2], [2, 3], [1, 4], [1, 1], [1, 2]]
+        @ AB2: same as AB1
+        @ id: imply the order of the two inputs. Select to be 0 if they are same, otherwise 1.
+    Return:
+        @ A two level list
+    """
     if id == 0:       
         A = [(item[0], item[1]) for item in AB1]
         B = [(item[0], item[1]) for item in AB2]
@@ -543,9 +588,20 @@ def AB_AB(AB1, AB2, id):
 
 
 def AB_AB_or(AB1, AB2, id):
-    '''
-
-    '''
+    """
+    This is a filter function to shrink the join result before cartesian production
+    Inputs:
+        @ A: a two level list which can be the output from single_join_filter_one,
+          and_condition_single, or_condition_single and except_condition_single.
+          Eg.: [[2,3,4,5,6]]
+        @ AB: a three level list which can be the output from double_join_filter function sets
+          and other filter function.
+        @ id: the order of the input file, if the input file is (AB and A) or (BA and B), id should
+          be 0, otherwise 1.
+    Return:
+        @ The same structure as input AB, in order to make the filter operation a closure.
+          The sequence of the corresponding csv files is still AB'.
+    """
     if id == 0:
         A = [(item[0], item[1]) for item in AB1]
         B = [(item[0], item[1]) for item in AB2]
@@ -557,9 +613,20 @@ def AB_AB_or(AB1, AB2, id):
     return output
 
 def AB_AC(AB, AC, id1, id2):
-    '''
-    
-    '''
+    """
+    This is a filter function to shrink the join result before cartesian production
+    Inputs:
+        @ AB: a three level list which can be the output from double_join_filter function sets
+          and other filter function. The order is AB.
+        @ AC: a three level list which can be the output from double_join_filter function sets
+          and other filter function.   The order is AC.
+        @ id1: the location of the common attribute in AB input.
+        @ id2: the location of the common attribute in AC input.
+        If the input is (AB and AC), id1 and id2 should be (0, 0).
+    Return:
+        @ The same structure as input AB and AC, in order to make the filter operation a closure.
+          The sequence of the corresponding csv files is still AB' and AC'.
+    """
     temp = []
     for i in range(len(AB)):
         temp = or_condition_single([AB[i][id1]] + temp)
@@ -571,9 +638,20 @@ def AB_AC(AB, AC, id1, id2):
     return [AB_new, AC_new]
 
 def A_a_B_b_file(path1, offsetlist1, attr1, path2, offsetlist2, attr2, operator, isNumber):
-    '''
-    !!!! important: file1 must be the filtered one.
-    '''
+    """
+    This is a funtion which will touch two csv files directly. File1 must be the small (filtered) one.
+    Inputs:
+        @ path1: the path to reach the first csv file.
+        @ path2: the path to reach the second csv file.
+        @ offsetlist1: a two level list which corresponds to the filtered offsets in the first csv file.
+        @ offsetlist2: a two level list which corresponds to the filtered offsets in the second csv file.
+        @ attr1: the index for the common attribute in the first csv file.
+        @ attr2: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ isNumber: the common attribute is number or not.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     out = []
     with open(path1, 'r', encoding="ISO-8859-1") as file1:
         with open(path2, 'r', encoding="ISO-8859-1") as file2:
@@ -621,9 +699,20 @@ def A_a_B_b_file(path1, offsetlist1, attr1, path2, offsetlist2, attr2, operator,
     return out
 
 def A_a_B_b_file_plus(path1, offsetlist1, attr1, path2, offsetlist2, attr2, operator, value):
-    '''
-    !!!! important: file1 must be the filtered one.
-    '''
+    """
+    This is a funtion which will touch two csv files directly. File1 must be the small (filtered) one.
+    Inputs:
+        @ path1: the path to reach the first csv file.
+        @ path2: the path to reach the second csv file.
+        @ offsetlist1: a two level list which corresponds to the filtered offsets in the first csv file.
+        @ offsetlist2: a two level list which corresponds to the filtered offsets in the second csv file.
+        @ attr1: the index for the common attribute in the first csv file.
+        @ attr2: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ value: the value that will be added on the right handside.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     out = []
     with open(path1, 'r', encoding="ISO-8859-1") as file1:
         with open(path2, 'r', encoding="ISO-8859-1") as file2:
@@ -657,9 +746,20 @@ def A_a_B_b_file_plus(path1, offsetlist1, attr1, path2, offsetlist2, attr2, oper
     return out    
 
 def A_a_B_b_file_multi(path1, offsetlist1, attr1, path2, offsetlist2, attr2, operator, value):
-    '''
-    !!!! important: file1 must be the filtered one.
-    '''
+    """
+    This is a funtion which will touch two csv files directly. File1 must be the small (filtered) one.
+    Inputs:
+        @ path1: the path to reach the first csv file.
+        @ path2: the path to reach the second csv file.
+        @ offsetlist1: a two level list which corresponds to the filtered offsets in the first csv file.
+        @ offsetlist2: a two level list which corresponds to the filtered offsets in the second csv file.
+        @ attr1: the index for the common attribute in the first csv file.
+        @ attr2: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ value: the value that will be multiplied on the right handside.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     out = []
     with open(path1, 'r', encoding="ISO-8859-1") as file1:
         with open(path2, 'r', encoding="ISO-8859-1") as file2:
@@ -693,11 +793,18 @@ def A_a_B_b_file_multi(path1, offsetlist1, attr1, path2, offsetlist2, attr2, ope
     return out
 
 def btree_A_a_file(btree, path, offsetlist, attr, operator, isNumber):
-    '''
-    !!!! important: file1 must be the filtered one.
-    offsetlist : [[1,2,3]]
-    btree < file
-    '''
+    """
+    This is a funtion which will touch the second csv file directly.
+    Inputs:
+        @ btree: the LHS input. A btree file.
+        @ path: the path to reach the second csv file.
+        @ offsetlist: a two level list which corresponds to the filtered offsets in the second csv file.
+        @ attr: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ isNumber: the common attribute is number or not.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     if isinstance(btree, str):
         btree = recoverFromPickle2(btree)
     out = []
@@ -720,11 +827,18 @@ def btree_A_a_file(btree, path, offsetlist, attr, operator, isNumber):
     return out
 
 def btree_A_a_file_plus(btree, path, offsetlist, attr, operator, val):
-    '''
-    !!!! important: file1 must be the filtered one.
-    offsetlist : [[1,2,3]]
-    btree < file
-    '''
+    """
+    This is a funtion which will touch the second csv file directly.
+    Inputs:
+        @ btree: the LHS input. A btree file.
+        @ path: the path to reach the second csv file.
+        @ offsetlist: a two level list which corresponds to the filtered offsets in the second csv file.
+        @ attr: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ val: the value that will be added on the right handside.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     if isinstance(btree, str):
         btree = recoverFromPickle2(btree)
     out = []
@@ -744,11 +858,18 @@ def btree_A_a_file_plus(btree, path, offsetlist, attr, operator, val):
     return out
 
 def btree_A_a_file_multi(btree, path, offsetlist, attr, operator, val):
-    '''
-    !!!! important: file1 must be the filtered one.
-    offsetlist : [[1,2,3]]
-    btree < file
-    '''
+    """
+    This is a funtion which will touch the second csv file directly.
+    Inputs:
+        @ btree: the LHS input. A btree file.
+        @ path: the path to reach the second csv file.
+        @ offsetlist: a two level list which corresponds to the filtered offsets in the second csv file.
+        @ attr: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ val: the value that will be multiplied on the right handside.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     if isinstance(btree, str):
         btree = recoverFromPickle2(btree)
     out = []
@@ -768,11 +889,18 @@ def btree_A_a_file_multi(btree, path, offsetlist, attr, operator, val):
     return out
 
 def A_a_btree_file(path, offsetlist, attr, btree, operator, isNumber):
-    '''
-    !!!! important: file1 must be the filtered one.
-    offsetlist : [[1,2,3]]
-    btree < file
-    '''
+    """
+    This is a funtion which will touch the first csv file directly.
+    Inputs:
+        @ btree: the LHS input. A btree file.
+        @ path: the path to reach the first csv file.
+        @ offsetlist: a two level list which corresponds to the filtered offsets in the first csv file.
+        @ attr: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ isNumber: the common attribute is number or not.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     if isinstance(btree, str):
         btree = recoverFromPickle2(btree)
     out = []
@@ -805,11 +933,18 @@ def A_a_btree_file(path, offsetlist, attr, btree, operator, isNumber):
     return out
 
 def A_a_btree_file_plus(path, offsetlist, attr, btree, operator, val):
-    '''
-    !!!! important: file1 must be the filtered one.
-    offsetlist : [[1,2,3]]
-    btree < file
-    '''
+    """
+    This is a funtion which will touch the first csv file directly.
+    Inputs:
+        @ btree: the LHS input. A btree file.
+        @ path: the path to reach the first csv file.
+        @ offsetlist: a two level list which corresponds to the filtered offsets in the first csv file.
+        @ attr: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ val: the value that will be added on the right handside.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     if isinstance(btree, str):
         btree = recoverFromPickle2(btree)
     out = []
@@ -839,11 +974,18 @@ def A_a_btree_file_plus(path, offsetlist, attr, btree, operator, val):
     return out
 
 def A_a_btree_file_multi(path, offsetlist, attr, btree, operator, val):
-    '''
-    !!!! important: file1 must be the filtered one.
-    offsetlist : [[1,2,3]]
-    btree < file
-    '''
+    """
+    This is a funtion which will touch the first csv file directly.
+    Inputs:
+        @ btree: the LHS input. A btree file.
+        @ path: the path to reach the first csv file.
+        @ offsetlist: a two level list which corresponds to the filtered offsets in the first csv file.
+        @ attr: the index for the common attribute in the second csv file.
+        @ operator: Five operators supported: '<', '>', '=', '<=', '>=', '<>'
+        @ val: the value that will be multiplied on the right handside.
+    Return:
+        @ A three level list with the same sturcture and meaning as the output from the all the filter functions.
+    """
     if isinstance(btree, str):
         btree = recoverFromPickle2(btree)
     out = []
@@ -873,10 +1015,14 @@ def A_a_btree_file_multi(path, offsetlist, attr, btree, operator, val):
     return out
 
 def get_small_btree(path, offsetlist, attr, isNumber):
-    '''
-    :param offsetlist:
-    :return:
-    '''
+    """
+    This is a funtion that will rebuild a smaller btree for the given attribute ID and offsetlist.
+    Input:
+        @ path: the path to reach the related csv file.
+        @ offsetlist: a two level list which contains all the filtered offsets in csv file.
+        @ attr: the index for the corresponding attribute.
+        @ isNumber: the corresponding attribute is number or not.
+    """
     dict = {}
     with open(path, 'r', encoding="ISO-8859-1") as file:
         f = csv.reader(file)
@@ -903,11 +1049,13 @@ def get_small_btree(path, offsetlist, attr, isNumber):
     return t
 
 def get_A_B_AB_and(list):
-    '''
-
-    :param list: [[[1,2],[3,4]],[[5,6],[7,8,9]]]
-    :return:
-    '''
+    """
+    This is a function that will squeeze AB and get the independent offsetlists for A and B under and condition.
+    Input:
+        @ list: a three level list. Eg.: [[[1,2],[2,3]],[[1],[4,1,2]]]
+    Return:
+        @ two of two level list, sequence is the same as input AB. Eg.: ([[1]], [[2]])
+    """
     temp1 = []
     temp2 = []
     for i in range(len(list)):
@@ -916,6 +1064,13 @@ def get_A_B_AB_and(list):
     return and_condition_single(temp1), and_condition_single(temp2)
 
 def get_A_B_AB_or(list):
+    """
+    This is a function that will squeeze AB and get the independent offsetlists for A and B under or condition.
+    Input:
+        @ list: a three level list. Eg.: [[[1,2],[2,3]],[[1],[4,1,2]]]
+    Return:
+        @ two of two level list, sequence is the same as input AB. Eg.: ([[1, 2]], [[1, 2, 3, 4]])
+    """
     temp1 = []
     temp2 = []
     for i in range(len(list)):
@@ -923,10 +1078,50 @@ def get_A_B_AB_or(list):
         temp2 = temp2 + [list[i][1]]
     return or_condition_single(temp1), or_condition_single(temp2)
 
+
+# def excep(AB, out):
+#     """
+#     This is a function that will handle the complex unequality condition between two csv files,
+#     not just one csv file and a value.
+#     Input:
+#         @ AB: a three level list after all the other conditions and filters.
+#         @ out: the corresponding output for the same A,B files but under equal condition which is
+#           what we want to get rid of from the input AB.
+#     Return:
+#         @ a three level list, the same as the input AB considering the sturcture, meaning and sequence.
+#
+#     """
+#     idx = []
+#     AB_new = copy.deepcopy(AB)
+#     for i in range(len(out)):
+#         for j in range(len(AB_new)):
+#             if len(set(out[i][0]).intersection(AB_new[j][0])) > 0:
+#                 #            if out[i][0][0] in AB[j][0]:
+#                 temp = except_condition_single([AB_new[j][1]] + [out[i][1]])[0]
+#                 if len(temp) != 0:
+#                     #                    print('i: ',i)
+#                     #                    print('j: ',j)
+#                     #                    print([AB[j][1]] + [out[i][1]])
+#                     #                    print(temp)
+#                     #                    print('-------------')
+#                     AB_new[j][1] = temp
+#                 # print('new: ', AB_new)
+#                 elif len(temp) == 0:
+#                     if j not in idx:
+#                         idx += [j]
+#     temp1 = copy.deepcopy(AB_new)
+#     for i in idx:
+#         AB_new.remove(temp1[i])
+#     # print(len(AB_new))
+#
+#     return AB_new
+
+
+
 #def AB_AB_and(AB1, AB2):
-#    '''
+#    """
 #    
-#    '''
+#    """
 #    if len(AB1 > AB2):
 #        a = AB2
 #        b = AB1
@@ -939,7 +1134,7 @@ def get_A_B_AB_or(list):
 #                if a[i][j] in 
 
 
-'''
+"""
 list1 = list(btree_a2.keys())#[1,2,3,5,9,10,11,14,23]
 list2 = list(btree_a1.keys())#[1,2,3,5,9,10,11,14,23]
 i = 0
@@ -974,7 +1169,7 @@ for i in range(len(row_list)):
 list_row = [[item[0], item[1]] for item in list_row]
     
 #double_join_filter(btree_a2,btree_a1,'<')        
-'''
+"""
 
 
 

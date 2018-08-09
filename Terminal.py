@@ -53,6 +53,7 @@ def main():
         except:
             selection = 0
         if selection == 1:
+            # Preprocess the data by splitting csv files if code is running with memory limit
             limit = int(input("Input the split limit:\n"))
             print('Preprocessing...')
             for f in CSVfile:
@@ -63,6 +64,7 @@ def main():
                     CSV_split[f] = 1
                 json.dump(CSV_split, open('CSV_split', 'w'))
         elif selection == 2:
+            # Running the code without memory limit
             for f in CSVfile:
                 CSV_split[f] = 1
             json.dump(CSV_split, open('CSV_split', 'w'))
@@ -127,6 +129,13 @@ def main():
             print("invalid choice")
 
 def splitSQL(sql, CSV_split):
+    """
+    When running code with memory limit, this function transfer original raw SQL statement into
+    a list of sql statement such that all the divided csv files can be accessed for query
+    :param sql(string): original raw SQL statement
+    :param CSV_split: dictionary showing how many files each csv file is divided into
+    :return: a list of sql statement to iterate each of the divided csv files
+    """
     sqlist = [sql]
     csv_used, alias_colume = PairCsvandAlias(sql)
     for j in range(len(csv_used)):

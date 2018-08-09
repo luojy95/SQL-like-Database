@@ -10,13 +10,12 @@ class Sql_parsing(object):
     """
     def __init__(self, sql, indexpath):
         """
-        This funciton build the object with SQL input and Btree file path and print out query result with
+        This function build the object with SQL input and Btree file path and get query results
+        with corresponding attributes.
         Args:
             sql(string): SQL input in the terminal
             indexpath(string): path to store the btree file
             self.alias_dic: a dictionary that stores the relation of csv file and their alias
-        Returns:
-            print out query results and count time consuming
          """
         self.opt = 500
         self.sql = sql
@@ -40,15 +39,21 @@ class Sql_parsing(object):
         #         print(next(reader))
 
     def get_result(self):
+        """
+        This function returns the query results with corresponding attributes.
+        """
         return self.fin_attributes, self.fin_result
 
-    # the function the parse the SELECT part (before FROM) with sql statement as the input.
-    # If the SELECT is not *, the outpub is a list of alias (can be None is no alias provided)
-    # and a list of the corresponding attribute.
-    # If the SELECT is *, will return alias_list as [None] and attribute list as [-1],
-    # this * statement will be check again when pull out tuple and attribute from the csv document again.
-    # The sequence is determined by the appearance in the SELECT part.
+
     def Selectparse(self):
+        """
+         the function the parse the SELECT part (before FROM) with sql statement as the input.
+         If the SELECT is not *, the outpub is a list of alias (can be None is no alias provided)
+         and a list of the corresponding attribute.
+         If the SELECT is *, will return alias_list as [None] and attribute list as [-1],
+         this * statement will be check again when pull out tuple and attribute from the csv document again.
+         The sequence is determined by the appearance in the SELECT part.
+        """
         alias_list = []
         print_colume = []
         for i, tok in enumerate(self.token_list):
@@ -71,9 +76,13 @@ class Sql_parsing(object):
         return alias_list, print_colume
 
 
-    # Pair the csv name and alias name in the sequence of identifier appearance from the FROM part,
-    # return csv_list (names of csv), alias_colume (a list of names of alias, alias can be None if not declared).
     def PairCsvandAlias(self):
+        """
+        This function pairs the csv name and alias name in the sequence of identifier appearance from the FROM part.
+        A dictionary using aliases as keys and csv file names as values is also built for parsing WHERE statement later.
+        Return:
+             csv_list (names of csv), alias_colume (a list of names of alias, alias can be None if not declared).
+        """
         csv_list = []
         alias_colume = []
         index_from = -1
@@ -114,8 +123,13 @@ class Sql_parsing(object):
         return project_csv_name, project_alias_name, project_attribute_name
 
 
-    # Parse all the conditions in the WHERE section and transfer the Bollean expression into Prefix Expression
     def Whereparse(self):
+        """
+        This function parses all the conditions in the WHERE section and
+        transfer the Bollean expression for query processor.
+        :return: a list of conditions such that  the relation between each element in the returned list is 'or'.
+        Within each element of the list, conditions are connected with 'and'.
+        """
         union = []
         flag = False
         for tok in self.token_list:
@@ -142,6 +156,9 @@ class Sql_parsing(object):
 
     # apply NOT to the conditions
     def getNOT(self, comparison):
+        """
+        For all the NOT operation in raw SQL, the following condition is directly transferred to remove NOT
+        """
         for tok in comparison.tokens:
             if tok.value == '=':
                 tok.value = '<>'
@@ -165,8 +182,11 @@ class Sql_parsing(object):
                 pass
         return comparison
 
-        # Determine if there is join conditions in SQL
+
     def hasJoin(self):
+        """
+        This function determines if there is join conditions in SQL
+        """
         for tok in self.token_list:
             if isinstance(tok, sqlparse.sql.Where):
                 condition_list = tok.tokens
@@ -180,6 +200,14 @@ class Sql_parsing(object):
 
     # Divide all the conditions into join conditions and single-table conditions
     def Classify_conditions(self, ANDconditions):
+        """
+
+        :param ANDconditions: one element of the list returned from Whereparse()
+        :return:
+        table_list: all the alias appeared in these conditions
+        single_cond_dic: dictionary of single table filter conditions with alias as key
+        join_cond: list of join conditions
+        """
         single_index = []
         single_cond_list = []
         single_cond_dic = {}
@@ -213,6 +241,11 @@ class Sql_parsing(object):
         return table_list,single_cond_dic,join_cond
 
     def TransSinglecomp(self,comparison):
+        """
+        This function returns query results from given single table filter condition
+        :param comparison: single table filter condition extracted from raw SQL
+        :return: results from query processor
+        """
         left_part = comparison.left
         right_part = comparison.right
         left_btree = self.getBtree(left_part, self.indexpath)
@@ -246,6 +279,12 @@ class Sql_parsing(object):
         return raw_list
 
     def getSingleTableQuery(self, table_list, single_cond_dic):
+        """
+        This function combines all the results of single table filter conditions connected with 'and'
+        :param table_list: all the alias appeared in query conditions
+        :param single_cond_dic: dictionary of single table filter conditions with alias as key
+        :return: a dictionary of query results from single table filter conditions with alias as key
+        """
         result = {}
         for alias in table_list:
             C_sum =[]
@@ -261,6 +300,12 @@ class Sql_parsing(object):
 
 
     def getJJQuery(self, JJ_cond, table_list):
+        """
+        Filter the join results and apply Cartesian product.
+        :param JJ_cond: a dictionary of query results from join conditions with alias as key
+        :param table_list: all the alias appeared in these conditions
+        :return: a list of join results after conducting Cartesian product
+        """
         join_result =[]
         key_list = list(JJ_cond.keys())
         for i in range(len(key_list)):
@@ -336,6 +381,11 @@ class Sql_parsing(object):
 
 
     def getFinalJoinResults(self,join_result):
+        """
+        Combine all the join conditions that are connected with 'and'
+        :param join_result: list returned from getJJQuery
+        :return: list of query results with corresponding aliases
+        """
         o1 = join_result.pop()
         if len(join_result) == 0:
             return [o1[0], o1[1]]
@@ -368,6 +418,11 @@ class Sql_parsing(object):
 
 
     def getQueryresult(self, union):
+        """
+        Receive parsed conditions from Whereparse() and get the final query result for printing out
+        :param union: list returned from Whereparse()
+        :return: list of final query results with corresponding aliases
+        """
         and_sum =[]
         if self.hasJoin():
             for andC in union:
@@ -405,8 +460,14 @@ class Sql_parsing(object):
         return Final_result
 
 
-    # Transfer Comparisons into raw query results
     def TransJoincomp(self, comparison, single_result):
+        """
+        This function returns query results from given join condition and decides join strategy
+        based on optimization rules
+        :param comparison: join condition extracted from raw SQL
+        :param single_result: a dictionary of query results from single table filter conditions with alias as key
+        :return: results from query processor
+        """
         op = ''
         value = ''
         left_part = comparison.left
@@ -1097,8 +1158,12 @@ class Sql_parsing(object):
         return raw_result
 
 
-    # Find csv name for the corresponding attribute
     def FindCsvpathandAttrId(self, tok):
+        """
+        This function find csv file path, correspond alias and attribute ID from given token
+        :param tok: the token extracted from raw SQL in the form of 'alias.attribute'
+        :return: alias, csv file path and attribute ID (used for find btree file)
+        """
         alias = tok.get_parent_name()
         csv_path = self.alias_dic[alias]
         attribute = tok.get_real_name()
@@ -1106,8 +1171,13 @@ class Sql_parsing(object):
         return alias, csv_path, attrId
 
 
-    # get Btree file path for the corresponding attribute
     def getBtree(self, tok, indexpath):
+        """
+        This function gets Btree file path for the corresponding attribute
+        :param tok: the token extracted from raw SQL in the form of alias.attribute
+        :param indexpath: the directory where all the btree files are stored.
+        :return: Btree file path in string
+        """
         alias,csv_path, attrId = self.FindCsvpathandAttrId(tok)
         csv_name = ntpath.basename(csv_path)
         btree_path = indexpath + csv_name.split('.')[0] + '_Attr_' + str(attrId) + '_.tree'
@@ -1115,6 +1185,10 @@ class Sql_parsing(object):
 
 
     def is_number(self,s):
+        """
+        This function decides if the input string s is a number.
+        :return: True if s is a number and False if not.
+        """
         try:
             float(s)
             return True
