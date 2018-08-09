@@ -1,4 +1,4 @@
-# CS411_Track2_CSV_plus
+# CSV_plus
 
 This directory contains code of our database system, which is designed to handle sql-like queries, 
 i.e., SELECT-FROM-WHERE.
